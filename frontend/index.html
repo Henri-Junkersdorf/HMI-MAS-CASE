@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Multi-Agent Visualization</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Inventory Multi-Agent System</h1>
+            <button id="run-demo-btn" class="run-button">Start Analyzing</button>
+        </header>
+        
+        <div class="main-content">
+            <div class="workflow-container">
+                <div class="workflow-title">
+                    <h2>Agent Workflow Visualization</h2>
+                    <div id="status-indicator" class="status-indicator idle">Status: Idle</div>
+                </div>
+                
+                <div class="workflow-diagram" id="workflow-diagram">
+                    <!-- Workflow diagram will be rendered here -->
+                </div>
+            </div>
+            
+            <div class="logs-container">
+                <div class="logs-header">
+                    <h2>Process Logs</h2>
+                    <div class="view-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="summary-view-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="toggle-label">Summary View</span>
+                    </div>
+                </div>
+                <div id="agent-logs" class="logs"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/agent-workflow.js"></script>
+</body>
+</html> 
