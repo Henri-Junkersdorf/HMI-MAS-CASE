@@ -10,6 +10,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import re
+import sys
+import io
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -173,6 +175,11 @@ class EmailTool(BaseTool):
             
             # Get content and format email body
             content = input_dict.get('body', '')
+            
+            # Radikale Nachbearbeitung - alle \n Zeichenfolgen komplett entfernen
+            content = content.replace('\\n', '')
+            content = content.replace('\\\\n', '')
+            
             body = f"""Dear {formatted_name},
 
 I hope this email finds you well. I'm writing to bring to your immediate attention a critical supply chain situation regarding the VQC4101-51 SMC 5/2-Wegeventil valve that requires urgent action.
@@ -251,6 +258,17 @@ Multi-Agent System
             # Always save a copy first
             with open(output_path, 'w') as f:
                 f.write(email_content)
+                
+            # Radikale Nachbearbeitung - alle \n Zeichenfolgen komplett entfernen
+            with open(output_path, 'r') as f:
+                cleaned_content = f.read()
+                # Hier nochmal alle Backslash-n Zeichenfolgen entfernen (inkl. doppelter)
+                cleaned_content = cleaned_content.replace('\\n', '')
+                cleaned_content = cleaned_content.replace('\\\\n', '')
+                
+            # Und nochmal speichern
+            with open(output_path, 'w') as f:
+                f.write(cleaned_content)
             
             # Try to send with retries
             max_retries = 3
@@ -285,8 +303,41 @@ Multi-Agent System
             logger.error(f"Error creating email: {str(e)}")
             return f"Failed to create email: {str(e)}"
 
+# Monkey-patch CrewAI's output to reduce indentation
+def patch_crewai_display():
+    try:
+        import crewai.agents.cache
+        import re
+        original_print = print
+        
+        def custom_print(*args, **kwargs):
+            if args and isinstance(args[0], str):
+                text = args[0]
+                
+                # Reduziere die Anzahl der Einrückungszeichen
+                if "│" in text and text.count("│") > 3:
+                    text = re.sub(r'(│\s+){4,}', '│ │ ', text)
+                    text = re.sub(r'(│\s+){3}', '│ │ ', text)
+                
+                # Entferne ANSI-Escape-Sequenzen für bessere Lesbarkeit
+                # Dies entfernt Farbcodes und Formatierungen
+                text = re.sub(r'\x1B\[[0-9;]*[mK]', '', text)
+                
+                args = (text,) + args[1:]
+                
+            original_print(*args, **kwargs)
+            
+        # Ersetze die print-Funktion in relevanten Modulen
+        sys.modules['crewai.agents.cache'].print = custom_print
+        
+    except Exception as e:
+        logger.warning(f"Konnte CrewAI-Anzeige nicht anpassen: {str(e)}")
+
 def run_analysis():
     try:
+        # Patch CrewAI display to reduce indentation
+        patch_crewai_display()
+        
         api_key = get_api_key()
         if not api_key:
             raise ValueError("Failed to load API key from config")

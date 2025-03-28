@@ -1219,22 +1219,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let displayMessage = message;
         let agentName = 'System';
         
-        // Try to extract agent name based on the actual CrewAI format
-        if (assignedToMatch) {
-            agentName = assignedToMatch[1].trim();
-        } else if (agentLineMatch) {
-            agentName = agentLineMatch[1].trim();
-        } else if (crewAgentMatch) {
-            agentName = crewAgentMatch[1].trim();
-        } else if (agentMatch) {
-            agentName = agentMatch[1].trim();
-        } else if (message.toLowerCase().includes('agent') && message.includes(':')) {
-            const parts = message.split(':');
-            if (parts.length >= 2 && parts[0].toLowerCase().includes('agent')) {
-                agentName = parts[0].replace(/.*agent/i, 'Agent').trim();
-            }
-        }
-        
         // For cleaner display, remove timestamps/logging prefixes
         if (displayMessage.includes('INFO:')) {
             displayMessage = displayMessage.split('INFO:')[1].trim();
@@ -1498,35 +1482,38 @@ document.addEventListener('DOMContentLoaded', function() {
         const agentSpan = document.createElement('span');
         agentSpan.className = 'log-agent';
         
-        // Shorten agent names for cleaner display
-        let displayName = agentName;
-        if (displayName.includes('Specialist')) {
-            displayName = displayName.replace(' Specialist', '');
-        }
-        if (displayName.includes('Analyst')) {
-            displayName = displayName.replace(' Analyst', '');
-        }
-        if (displayName.includes('Researcher')) {
-            displayName = displayName.replace(' Researcher', '');
-        }
+        // Immer "System:" anzeigen anstatt des Agentennamens
+        agentSpan.textContent = "System:";
+        
+        // Shorten agent names for cleaner display - wird nicht mehr benötigt
+        // let displayName = agentName;
+        // if (displayName.includes('Specialist')) {
+        //     displayName = displayName.replace(' Specialist', '');
+        // }
+        // if (displayName.includes('Analyst')) {
+        //     displayName = displayName.replace(' Analyst', '');
+        // }
+        // if (displayName.includes('Researcher')) {
+        //     displayName = displayName.replace(' Researcher', '');
+        // }
         
         // Further shorten common prefixes
-        if (agentType === 'Forecasting') {
-            displayName = 'Forecasting';
-        } else if (agentType === 'Alt. Supplier') {
-            displayName = 'Alt. Supplier';
-        } else if (agentType === 'Performance') {
-            displayName = 'Performance';
-        } else if (agentType === 'Availability') {
-            displayName = 'Availability';
-        } else if (agentType === 'Communication') {
-            displayName = 'Communication';
-        }
+        // if (agentType === 'Forecasting') {
+        //     displayName = 'Forecasting';
+        // } else if (agentType === 'Alt. Supplier') {
+        //     displayName = 'Alt. Supplier';
+        // } else if (agentType === 'Performance') {
+        //     displayName = 'Performance';
+        // } else if (agentType === 'Availability') {
+        //     displayName = 'Availability';
+        // } else if (agentType === 'Communication') {
+        //     displayName = 'Communication';
+        // }
         
         // Set the agent type as a data attribute for styling
         logEntry.setAttribute('data-agent-type', agentType);
         
-        agentSpan.textContent = displayName;
+        agentSpan.textContent = "System:";
         
         const messageSpan = document.createElement('span');
         messageSpan.className = 'log-message';
@@ -2058,7 +2045,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         agentSpan.className = 'log-agent';
                         
                         // Use shortened display names
-                        agentSpan.textContent = agentType;
+                        agentSpan.textContent = "System:";
                         
                         const messageSpan = document.createElement('span');
                         messageSpan.className = 'log-message';
