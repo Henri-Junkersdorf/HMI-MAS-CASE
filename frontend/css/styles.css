@@ -149,8 +149,10 @@ h2 {
     height: 900px; /* Fixed height for agents layout */
     margin: 0 auto; /* Center horizontally */
     top: 45%; /* Position vertically - moved down from 40% */
-    transform: translateY(-50%); /* Center vertically */
-    left: -10%; /* Move more to the left from -5% */
+    transform: translateY(-50%) scale(1); /* Center vertically and add scale support */
+    left: -5%; /* Adjusted to -5% for better balance */
+    transform-origin: center center;
+    transition: transform 0.3s ease;
 }
 
 /* Agents */
@@ -659,4 +661,50 @@ input:checked + .slider:before {
         flex: 1; /* Allow it to grow normally */
         min-height: 800px; /* Set a minimum height for the logs container */
     }
+}
+
+/* Zoom Controls */
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.zoom-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.zoom-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.zoom-btn:active {
+    transform: translateY(0);
+}
+
+.zoom-level {
+    background-color: rgba(52, 152, 219, 0.1);
+    padding: 5px 10px;
+    border-radius: 15px;
+    color: #3498db;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    margin: 0 5px;
 } 

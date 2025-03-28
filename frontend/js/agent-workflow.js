@@ -6,6 +6,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const agentLogs = document.getElementById('agent-logs');
     const summaryViewToggle = document.getElementById('summary-view-toggle');
     
+    // Zoom control elements
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const zoomLevelDisplay = document.getElementById('zoom-level');
+    const agentContainer = workflowDiagram.querySelector('.agent-container');
+    
+    // Zoom state
+    let currentZoom = 1;
+    const minZoom = 0.5;
+    const maxZoom = 1.5;
+    const zoomStep = 0.1;
+    
+    // Zoom control functions
+    function updateZoom() {
+        agentContainer.style.transform = `translateY(-50%) scale(${currentZoom})`;
+        zoomLevelDisplay.textContent = `${Math.round(currentZoom * 100)}%`;
+    }
+    
+    zoomInBtn.addEventListener('click', () => {
+        if (currentZoom < maxZoom) {
+            currentZoom = Math.min(maxZoom, currentZoom + zoomStep);
+            updateZoom();
+        }
+    });
+    
+    zoomOutBtn.addEventListener('click', () => {
+        if (currentZoom > minZoom) {
+            currentZoom = Math.max(minZoom, currentZoom - zoomStep);
+            updateZoom();
+        }
+    });
+    
     // Define agents and their workflow with better spacing to completely prevent overlapping
     const agents = [
         {
