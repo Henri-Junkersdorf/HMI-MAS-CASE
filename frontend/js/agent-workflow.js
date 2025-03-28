@@ -840,8 +840,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderWorkflow() {
         console.log("Rendering workflow with agent statuses:", agents.map(a => `${a.name}: ${a.status}`).join(", "));
         
-        // Clear the diagram
-        workflowDiagram.innerHTML = '';
+        // Get the agent container
+        const agentContainer = workflowDiagram.querySelector('.agent-container');
+        
+        // Clear the container
+        agentContainer.innerHTML = '';
         
         // Create connections first (so they appear behind agents)
         connections.forEach(connection => {
@@ -876,7 +879,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="agent-status ${agent.status}">${capitalizeFirstLetter(agent.status)}</div>
         `;
         
-        workflowDiagram.appendChild(agentElement);
+        // Append to agent container instead of workflow diagram
+        workflowDiagram.querySelector('.agent-container').appendChild(agentElement);
         console.log(`Agent element created with class agent-${agent.status}`);
     }
     
@@ -888,7 +892,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'availability-analyst':
                 return '🔍'; // Magnifying glass for analysis
             case 'researcher':
-                return '🔎'; // Another search icon for research
+                return '🌎'; // Globe for international research
             case 'performance-analyst':
                 return '📈'; // Increasing chart for performance
             case 'communication':
@@ -928,6 +932,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const toAgent = agents.find(a => a.id === connection.to);
         
         if (!fromAgent || !toAgent) return;
+        
+        // Get the agent container
+        const agentContainer = workflowDiagram.querySelector('.agent-container');
         
         // Calculate connection points and dimensions
         const fromX = fromAgent.position.x + 200; // Right edge of from agent
@@ -997,9 +1004,9 @@ document.addEventListener('DOMContentLoaded', function() {
             horizontalLine2.style.width = `${fromX + 60 - toX}px`; // Connect to vertical line
             horizontalLine2.style.height = '4px';
             
-            workflowDiagram.appendChild(horizontalLine1);
-            workflowDiagram.appendChild(verticalLine);
-            workflowDiagram.appendChild(horizontalLine2);
+            agentContainer.appendChild(horizontalLine1);
+            agentContainer.appendChild(verticalLine);
+            agentContainer.appendChild(horizontalLine2);
             return;
         }
         
@@ -1013,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', function() {
             connectionElement.style.width = `${toX - fromX}px`;
             connectionElement.style.height = '4px';
             
-            workflowDiagram.appendChild(connectionElement);
+            agentContainer.appendChild(connectionElement);
         } else {
             // Connection with a bend (Three segments)
             const midX = fromX + Math.floor((toX - fromX) / 2);
@@ -1039,9 +1046,9 @@ document.addEventListener('DOMContentLoaded', function() {
             segment3.style.width = `${toX - midX}px`;
             segment3.style.height = '4px';
             
-            workflowDiagram.appendChild(segment1);
-            workflowDiagram.appendChild(segment2);
-            workflowDiagram.appendChild(segment3);
+            agentContainer.appendChild(segment1);
+            agentContainer.appendChild(segment2);
+            agentContainer.appendChild(segment3);
         }
     }
     
