@@ -253,6 +253,14 @@ document.addEventListener('DOMContentLoaded', function() {
         let errorCount = 0;
         const maxErrors = 3; // Allow up to 3 consecutive errors before showing error state
         
+        // Reset button after 60 seconds as a fail-safe
+        const buttonSafetyTimeout = setTimeout(() => {
+            console.log("Safety timeout triggered - enabling button");
+            runDemoBtn.disabled = false;
+            statusIndicator.className = 'status-indicator';
+            statusIndicator.textContent = 'Status: Ready';
+        }, 60000); // 60 Sekunden
+        
         // Poll every 500ms for more responsive updates
         statusPollingInterval = setInterval(() => {
             fetch('/api/status')
@@ -263,7 +271,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorCount = 0; // Reset error count on successful response
                     return response.json();
                 })
-                .then(data => updateUIFromStatus(data))
+                .then(data => {
+                    // Clear the safety timeout if we get a valid response
+                    if (data && data.status !== 'running') {
+                        clearTimeout(buttonSafetyTimeout);
+                        runDemoBtn.disabled = false;
+                    }
+                    updateUIFromStatus(data);
+                })
                 .catch(error => {
                     console.error('Error polling status:', error);
                     errorCount++;
@@ -272,6 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (errorCount >= maxErrors) {
                         // Stop polling on persistent error
                         clearInterval(statusPollingInterval);
+                        clearTimeout(buttonSafetyTimeout);
                         
                         // Update UI
                         statusIndicator.className = 'status-indicator error';
@@ -329,6 +345,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Safety check - if response is empty or invalid, don't process it
         if (!statusData || typeof statusData !== 'object') {
             console.error('Invalid status data received:', statusData);
+            // Stelle sicher, dass der Button bei fehlerhaften Daten aktiviert wird
+            runDemoBtn.disabled = false;
             return;
         }
         
@@ -356,6 +374,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (anyUpdated) {
                     renderWorkflow();
                 }
+            }
+            // Bei Fehlern immer den Button aktivieren
+            else if (statusData.status === 'error') {
+                console.log("Process error, ensuring button is enabled");
+                runDemoBtn.disabled = false;
             }
         }
         
@@ -866,6 +889,13 @@ document.addEventListener('DOMContentLoaded', function() {
             clearInterval(statusPollingInterval);
             statusPollingInterval = null;
         }
+        
+        // Aktiviere den Button wieder (wichtig!)
+        runDemoBtn.disabled = false;
+        
+        // Setze den Status-Indikator zurück
+        statusIndicator.className = 'status-indicator';
+        statusIndicator.textContent = 'Status: Ready';
     }
     
     // Function to render the workflow diagram
@@ -1238,23 +1268,87 @@ document.addEventListener('DOMContentLoaded', function() {
                                           .replace(/\[\d+:\d+m/g, '')  // Remove timestamp format codes
                                           .trim();
             
-            // Replace spaces with non-breaking spaces for indentation
-            displayMessage = displayMessage.replace(/^(\s+)/gm, (match) => {
-                return '&nbsp;'.repeat(match.length);
+            // Spezielle Behandlung für Crew Execution Zeilen
+            if (displayMessage.includes('Crew Execution') || displayMessage.includes('Started') || displayMessage.includes('Name: crew')) {
+                // Ersetze die Zeile mit vielen Strichen durch eine kürzere Version
+                if (displayMessage.includes('─────') && displayMessage.includes('Crew Execution Started')) {
+                    // Kürzere Version der Box mit weniger Strichen
+                    displayMessage = "╭──── Crew Execution Started ────╮";
+                    displayMessage = '<span style="color:#2980b9; font-weight:bold;">' + displayMessage + '</span>';
+                }
+                // Für die "Started" Zeile (die Linie)
+                else if (displayMessage.match(/Started[\s\-]+Crew Execution/)) {
+                    displayMessage = displayMessage.replace(/^(\s*)(Started[\s\-]+Crew Execution)/gm, 
+                        '$1<span style="color:#2980b9; margin-left:20px;">Started ── Crew Execution</span>');
+                }
+                // Für die "Crew Execution Started" Zeile
+                else if (displayMessage.match(/\|.*?Crew Execution Started/)) {
+                    displayMessage = displayMessage.replace(/^(\s*)\|(.*?Crew Execution Started)/gm, 
+                        '$1<span style="color:#2980b9; margin-left:30px;">|&nbsp;&nbsp;$2</span>');
+                }
+                // Für die "Name: crew" Zeile
+                else if (displayMessage.match(/\|.*?Name: crew/)) {
+                    displayMessage = displayMessage.replace(/^(\s*)\|(.*?Name: crew)/gm, 
+                        '$1<span style="color:#2980b9; margin-left:30px;">|&nbsp;&nbsp;$2</span>');
+                }
+            }
+            
+            // Verbesserte Einrückungsbehandlung für CrewAI-Baumstruktur
+            // Identifiziere und erhalte die Baumstruktur-Symbole (├, │, └, etc.)
+            displayMessage = displayMessage.replace(/^([\s]*)([├└│─ ]+)/gm, (match, spaces, treeSymbols) => {
+                // Ersetze alle Leerzeichen mit non-breaking spaces
+                const nbspSpaces = '&nbsp;'.repeat(spaces.length);
+                
+                // Spezielle Behandlung für die Crew Task Zeilen
+                if (treeSymbols.includes('├') && match.includes('Task:')) {
+                    // Mehr Einrückung für Task-Zeilen
+                    const formattedSymbols = '├─── ';
+                    return nbspSpaces + '&nbsp;&nbsp;&nbsp;&nbsp;' + formattedSymbols;
+                } 
+                // Spezielle Behandlung für Status-Zeilen (typischerweise nach Task-Zeilen)
+                else if (treeSymbols.includes('│') && match.includes('Status:')) {
+                    // Mehr Einrückung für Status-Zeilen
+                    const formattedSymbols = '│&nbsp;&nbsp;&nbsp;&nbsp;';
+                    return nbspSpaces + '&nbsp;&nbsp;&nbsp;&nbsp;' + formattedSymbols;
+                }
+                // Normale Behandlung für andere Baumstruktursymbole
+                else {
+                    // Stelle sicher, dass die Baumstruktur-Symbole ordentlich ausgerichtet sind
+                    // Ersetze Standardsymbole mit besser darstellbaren Versionen
+                    const formattedSymbols = treeSymbols
+                        .replace(/├/g, '├─')
+                        .replace(/└/g, '└─')
+                        .replace(/│/g, '│&nbsp;')
+                        .replace(/ /g, '&nbsp;');
+                    
+                    return nbspSpaces + formattedSymbols;
+                }
             });
+            
+            // Zusätzliche Einrückung für andere Zeilen (die keine Baumstruktur-Symbole haben)
+            displayMessage = displayMessage.replace(/^(\s+)(?![├└│─])/gm, (match) => {
+                return '&nbsp;'.repeat(match.length * 1.5); // Etwas mehr Platz für bessere Lesbarkeit
+            });
+            
+            // Spezielle Behandlung für die Crew-Ausführungszeilen
+            displayMessage = displayMessage.replace(/(Crew Execution Started|Crew Execution|Name: crew)/g, 
+                '<span style="font-weight:bold; color:#2980b9;">$1</span>');
             
             // Preserve line breaks
             displayMessage = displayMessage.replace(/\n/g, '<br>');
             
-            // Highlight key elements
+            // Highlight key elements with improved styling
             displayMessage = displayMessage
-                .replace(/(Task:.*?)(?=<br>|$)/g, '<span style="color:#3498db; font-weight:bold;">$1</span>')
+                .replace(/(Task:\s*[a-f0-9-]+)(?=<br>|$)/g, '<span style="color:#3498db; font-weight:bold;">$1</span>')
                 .replace(/(Assigned to:.*?)(?=<br>|$)/g, '<span style="color:#2ecc71; font-weight:bold;">$1</span>')
                 .replace(/(Agent:.*?)(?=<br>|$)/g, '<span style="color:#2ecc71; font-weight:bold;">$1</span>')
                 .replace(/(Status:.*?Completed.*?)(?=<br>|$)/g, '<span style="color:#2ecc71; font-weight:bold;">$1</span>')
                 .replace(/(Status:.*?Executing.*?)(?=<br>|$)/g, '<span style="color:#f39c12; font-weight:bold;">$1</span>')
                 .replace(/(Status:.*?In Progress.*?)(?=<br>|$)/g, '<span style="color:#f39c12; font-weight:bold;">$1</span>')
                 .replace(/(Used .*?)(?=<br>|$)/g, '<span style="color:#95a5a6">$1</span>');
+            
+            // Setze CSS für bessere Struktur und Lesbarkeit
+            logEntry.style.fontFamily = "monospace";
             
             messageSpan.innerHTML = displayMessage;
         } else {
@@ -1482,38 +1576,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const agentSpan = document.createElement('span');
         agentSpan.className = 'log-agent';
         
-        // Immer "System:" anzeigen anstatt des Agentennamens
-        agentSpan.textContent = "System:";
-        
-        // Shorten agent names for cleaner display - wird nicht mehr benötigt
-        // let displayName = agentName;
-        // if (displayName.includes('Specialist')) {
-        //     displayName = displayName.replace(' Specialist', '');
-        // }
-        // if (displayName.includes('Analyst')) {
-        //     displayName = displayName.replace(' Analyst', '');
-        // }
-        // if (displayName.includes('Researcher')) {
-        //     displayName = displayName.replace(' Researcher', '');
-        // }
-        
-        // Further shorten common prefixes
-        // if (agentType === 'Forecasting') {
-        //     displayName = 'Forecasting';
-        // } else if (agentType === 'Alt. Supplier') {
-        //     displayName = 'Alt. Supplier';
-        // } else if (agentType === 'Performance') {
-        //     displayName = 'Performance';
-        // } else if (agentType === 'Availability') {
-        //     displayName = 'Availability';
-        // } else if (agentType === 'Communication') {
-        //     displayName = 'Communication';
-        // }
+        // Zeige den tatsächlichen Agentennamen statt "System:"
+        let displayName = "";
+        if (agentType === 'Forecasting') displayName = "Demand Forecasting Specialist:";
+        else if (agentType === 'Availability') displayName = "Availability Analyst:";
+        else if (agentType === 'Alt. Supplier') displayName = "Alternative Supplier Researcher:";
+        else if (agentType === 'Performance') displayName = "Supplier Performance Analyst:";
+        else if (agentType === 'Communication') displayName = "Communication Specialist:";
+        else displayName = "System:";
         
         // Set the agent type as a data attribute for styling
         logEntry.setAttribute('data-agent-type', agentType);
         
-        agentSpan.textContent = "System:";
+        agentSpan.textContent = displayName;
         
         const messageSpan = document.createElement('span');
         messageSpan.className = 'log-message';
@@ -2044,8 +2119,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         const agentSpan = document.createElement('span');
                         agentSpan.className = 'log-agent';
                         
-                        // Use shortened display names
-                        agentSpan.textContent = "System:";
+                        // Zeige den tatsächlichen Agentennamen statt "System:"
+                        let displayName = "";
+                        if (agentType === 'Forecasting') displayName = "Demand Forecasting Specialist:";
+                        else if (agentType === 'Availability') displayName = "Availability Analyst:";
+                        else if (agentType === 'Alt. Supplier') displayName = "Alternative Supplier Researcher:";
+                        else if (agentType === 'Performance') displayName = "Supplier Performance Analyst:";
+                        else if (agentType === 'Communication') displayName = "Communication Specialist:";
+                        else displayName = "System:";
+                        
+                        // Set the agent type as a data attribute for styling
+                        logEntry.setAttribute('data-agent-type', agentType);
+                        
+                        agentSpan.textContent = displayName;
                         
                         const messageSpan = document.createElement('span');
                         messageSpan.className = 'log-message';
