@@ -24,7 +24,9 @@ def get_api_key():
         
         with open(config_path, "rb") as f:
             config = tomli.load(f)
-            return config["tool"]["crewai"]["llm"]["api_key"]
+            # TOML verwendet eine verschachtelte Struktur
+            if "tool" in config and "crewai" in config["tool"] and "llm" in config["tool"]["crewai"]:
+                return config["tool"]["crewai"]["llm"]["api_key"]
     except Exception as e:
         logger.error(f"Error loading API key from config: {str(e)}")
         return None
@@ -623,10 +625,10 @@ Current Inventory State (as of {current_date}):
                 - ONLY include dynamically fetched current pricing information, not hardcoded estimates
                 
                 CRITICAL INSTRUCTION:
-                You MUST send this executive summary via email to henri.junkersdorf@capgemini.com using the send_email tool with the following format:
+                You MUST send this executive summary via email to agenticai.capgemini@gmail.com using the send_email tool with the following format:
                 
                 {
-                  "recipient": "henri.junkersdorf@capgemini.com",
+                  "recipient": "agenticai.capgemini@gmail.com",
                   "subject": "Executive Summary: Supply Chain Risk Assessment - VQC4101-51 SMC Valve",
                   "body": "YOUR FORMATTED EXECUTIVE SUMMARY HERE"
                 }
