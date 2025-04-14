@@ -249,7 +249,9 @@ class UILogHandler(logging.Handler):
         except Exception as e:
             print(f"Error in UILogHandler: {str(e)}")
 
-app = Flask(__name__, static_folder='frontend')
+app = Flask(__name__, 
+            static_folder='frontend',
+            template_folder='frontend')
 
 # Global variables to track process status
 process_status = {
@@ -595,8 +597,18 @@ class StdoutCapture:
 
 @app.route('/')
 def index():
-    """Serve the main frontend page."""
-    return send_from_directory('frontend', 'index.html')
+    return render_template('index.html')
+
+@app.route('/landing')
+def landing():
+    return render_template('landing.html')
+
+@app.route('/limited')
+def limited_index():
+    # We render the same template, the difference will be handled
+    # in the backend logic triggered by the run button, which will
+    # know which CSV to use based on the context or a parameter.
+    return render_template('index.html')
 
 @app.route('/<path:path>')
 def serve_static(path):
@@ -626,20 +638,26 @@ def run_demo():
         # Don't run if already running
         if process_status['status'] == 'running':
             return jsonify({'error': 'Process is already running'}), 400
-        
+
+        # Get scenario from request body (default to 'standard')
+        request_data = request.get_json() or {}
+        scenario = request_data.get('scenario', 'standard') # 'standard' oder 'limited'
+        logger.info(f"Received run request for scenario: {scenario}")
+
         # Reset status
         process_status.update({
             'status': 'running',
             'logs': [],
             'current_agent': None,
-            'result': None
+            'result': None,
+            'scenario': scenario # Store scenario in status
         })
-        
-        # Start the analysis in a separate thread to not block the main thread
-        thread = threading.Thread(target=run_demo_thread)
+
+        # Start the analysis in a separate thread, passing the scenario
+        thread = threading.Thread(target=run_demo_thread, args=(scenario,)) # Pass scenario to thread
         thread.daemon = True
         thread.start()
-        
+
         return jsonify({'status': 'started'})
     except Exception as e:
         logger.error(f"Error starting demo: {str(e)}")
@@ -648,7 +666,7 @@ def run_demo():
             'error': str(e)
         }), 500
 
-def run_demo_thread():
+def run_demo_thread(scenario='standard'): # Add scenario parameter with default
     """Run the analysis demo in a separate thread."""
     global process_status
     try:
@@ -656,34 +674,34 @@ def run_demo_thread():
         log_thread = threading.Thread(target=capture_logs, args=(process_status,))
         log_thread.daemon = True
         log_thread.start()
-        
+
         # Start stdout capture
         stdout_capture = StdoutCapture(process_status)
         stdout_capture.start()
-        
+
         # Start email monitoring
         email_monitor_thread = threading.Thread(target=monitor_email_summary, args=(process_status,))
         email_monitor_thread.daemon = True
         email_monitor_thread.start()
-        
-        # Run the actual analysis
-        print("Starting analysis with CrewAI agents...")
-        result = run_analysis()
-        
+
+        # Run the actual analysis, passing the scenario
+        print(f"Starting analysis for scenario '{scenario}' with CrewAI agents...")
+        result = run_analysis(scenario=scenario) # Pass scenario to run_analysis
+
         # Stop stdout capture
         stdout_capture.stop()
-        
+
         # Update process status
         process_status.update({
             'status': 'completed',
-            'result': str(result) if result else "Analysis completed successfully with email sent."
+            'result': str(result) if result else f"Analysis ({scenario} scenario) completed successfully with email sent."
         })
-        
+
         # Ensure log contains email confirmation
-        logger.info("Email has been sent with analysis results")
+        logger.info(f"Email has been sent with analysis results ({scenario} scenario)")
     except Exception as e:
         # Update process status on error
-        error_msg = f"Error: {str(e)}"
+        error_msg = f"Error in {scenario} scenario: {str(e)}"
         logger.error(error_msg)
         process_status.update({
             'status': 'error',

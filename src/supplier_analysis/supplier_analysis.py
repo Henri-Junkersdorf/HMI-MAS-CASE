@@ -335,7 +335,7 @@ def patch_crewai_display():
     except Exception as e:
         logger.warning(f"Konnte CrewAI-Anzeige nicht anpassen: {str(e)}")
 
-def run_analysis():
+def run_analysis(scenario='standard'):
     try:
         # Patch CrewAI display to reduce indentation
         patch_crewai_display()
@@ -346,9 +346,20 @@ def run_analysis():
         os.environ["OPENAI_API_KEY"] = api_key
         logger.info("API key configured successfully")
 
-        # Load supplier data
-        suppliers_df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'suppliers.csv'))
-        logger.info(f"Loaded {len(suppliers_df)} suppliers from CSV")
+        # Determine which CSV file to load based on the scenario
+        if scenario == 'limited':
+            supplier_csv_file = 'suppliers_limited.csv'
+            logger.info("Running 'limited' scenario, loading suppliers_limited.csv")
+        else:
+            supplier_csv_file = 'suppliers.csv'
+            logger.info("Running 'standard' scenario, loading suppliers.csv")
+
+        # Load supplier data using the determined filename
+        supplier_csv_path = os.path.join(os.path.dirname(__file__), supplier_csv_file)
+        if not os.path.exists(supplier_csv_path):
+             raise FileNotFoundError(f"Supplier CSV file not found: {supplier_csv_path}")
+        suppliers_df = pd.read_csv(supplier_csv_path)
+        logger.info(f"Loaded {len(suppliers_df)} suppliers from {supplier_csv_file}")
         
         # Load valve demand data
         try:
@@ -696,4 +707,4 @@ def calculate_seasonal_factors(df):
     return "\n".join(seasonal_info)
 
 if __name__ == "__main__":
-    run_analysis() 
+    run_analysis()

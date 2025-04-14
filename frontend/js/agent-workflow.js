@@ -215,12 +215,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Disable the button during execution
         runDemoBtn.disabled = true;
         
-        // Call the API to start the demo
+        // Determine the scenario based on the current page URL
+        const isLimitedScenario = window.location.pathname === '/limited';
+        const scenarioData = isLimitedScenario ? { scenario: 'limited' } : {};
+
+        // Call the API to start the demo, sending the scenario data
         fetch('/api/run', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
+            body: JSON.stringify(scenarioData) // Send scenario in the request body
         })
         .then(response => response.json())
         .then(data => {
@@ -1268,87 +1273,23 @@ document.addEventListener('DOMContentLoaded', function() {
                                           .replace(/\[\d+:\d+m/g, '')  // Remove timestamp format codes
                                           .trim();
             
-            // Spezielle Behandlung für Crew Execution Zeilen
-            if (displayMessage.includes('Crew Execution') || displayMessage.includes('Started') || displayMessage.includes('Name: crew')) {
-                // Ersetze die Zeile mit vielen Strichen durch eine kürzere Version
-                if (displayMessage.includes('─────') && displayMessage.includes('Crew Execution Started')) {
-                    // Kürzere Version der Box mit weniger Strichen
-                    displayMessage = "╭──── Crew Execution Started ────╮";
-                    displayMessage = '<span style="color:#2980b9; font-weight:bold;">' + displayMessage + '</span>';
-                }
-                // Für die "Started" Zeile (die Linie)
-                else if (displayMessage.match(/Started[\s\-]+Crew Execution/)) {
-                    displayMessage = displayMessage.replace(/^(\s*)(Started[\s\-]+Crew Execution)/gm, 
-                        '$1<span style="color:#2980b9; margin-left:20px;">Started ── Crew Execution</span>');
-                }
-                // Für die "Crew Execution Started" Zeile
-                else if (displayMessage.match(/\|.*?Crew Execution Started/)) {
-                    displayMessage = displayMessage.replace(/^(\s*)\|(.*?Crew Execution Started)/gm, 
-                        '$1<span style="color:#2980b9; margin-left:30px;">|&nbsp;&nbsp;$2</span>');
-                }
-                // Für die "Name: crew" Zeile
-                else if (displayMessage.match(/\|.*?Name: crew/)) {
-                    displayMessage = displayMessage.replace(/^(\s*)\|(.*?Name: crew)/gm, 
-                        '$1<span style="color:#2980b9; margin-left:30px;">|&nbsp;&nbsp;$2</span>');
-                }
-            }
-            
-            // Verbesserte Einrückungsbehandlung für CrewAI-Baumstruktur
-            // Identifiziere und erhalte die Baumstruktur-Symbole (├, │, └, etc.)
-            displayMessage = displayMessage.replace(/^([\s]*)([├└│─ ]+)/gm, (match, spaces, treeSymbols) => {
-                // Ersetze alle Leerzeichen mit non-breaking spaces
-                const nbspSpaces = '&nbsp;'.repeat(spaces.length);
-                
-                // Spezielle Behandlung für die Crew Task Zeilen
-                if (treeSymbols.includes('├') && match.includes('Task:')) {
-                    // Mehr Einrückung für Task-Zeilen
-                    const formattedSymbols = '├─── ';
-                    return nbspSpaces + '&nbsp;&nbsp;&nbsp;&nbsp;' + formattedSymbols;
-                } 
-                // Spezielle Behandlung für Status-Zeilen (typischerweise nach Task-Zeilen)
-                else if (treeSymbols.includes('│') && match.includes('Status:')) {
-                    // Mehr Einrückung für Status-Zeilen
-                    const formattedSymbols = '│&nbsp;&nbsp;&nbsp;&nbsp;';
-                    return nbspSpaces + '&nbsp;&nbsp;&nbsp;&nbsp;' + formattedSymbols;
-                }
-                // Normale Behandlung für andere Baumstruktursymbole
-                else {
-                    // Stelle sicher, dass die Baumstruktur-Symbole ordentlich ausgerichtet sind
-                    // Ersetze Standardsymbole mit besser darstellbaren Versionen
-                    const formattedSymbols = treeSymbols
-                        .replace(/├/g, '├─')
-                        .replace(/└/g, '└─')
-                        .replace(/│/g, '│&nbsp;')
-                        .replace(/ /g, '&nbsp;');
-                    
-                    return nbspSpaces + formattedSymbols;
-                }
+            // Replace spaces with non-breaking spaces for indentation
+            displayMessage = displayMessage.replace(/^(\s+)/gm, (match) => {
+                return '&nbsp;'.repeat(match.length);
             });
-            
-            // Zusätzliche Einrückung für andere Zeilen (die keine Baumstruktur-Symbole haben)
-            displayMessage = displayMessage.replace(/^(\s+)(?![├└│─])/gm, (match) => {
-                return '&nbsp;'.repeat(match.length * 1.5); // Etwas mehr Platz für bessere Lesbarkeit
-            });
-            
-            // Spezielle Behandlung für die Crew-Ausführungszeilen
-            displayMessage = displayMessage.replace(/(Crew Execution Started|Crew Execution|Name: crew)/g, 
-                '<span style="font-weight:bold; color:#2980b9;">$1</span>');
             
             // Preserve line breaks
             displayMessage = displayMessage.replace(/\n/g, '<br>');
             
-            // Highlight key elements with improved styling
+            // Highlight key elements
             displayMessage = displayMessage
-                .replace(/(Task:\s*[a-f0-9-]+)(?=<br>|$)/g, '<span style="color:#3498db; font-weight:bold;">$1</span>')
+                .replace(/(Task:.*?)(?=<br>|$)/g, '<span style="color:#3498db; font-weight:bold;">$1</span>')
                 .replace(/(Assigned to:.*?)(?=<br>|$)/g, '<span style="color:#2ecc71; font-weight:bold;">$1</span>')
                 .replace(/(Agent:.*?)(?=<br>|$)/g, '<span style="color:#2ecc71; font-weight:bold;">$1</span>')
                 .replace(/(Status:.*?Completed.*?)(?=<br>|$)/g, '<span style="color:#2ecc71; font-weight:bold;">$1</span>')
                 .replace(/(Status:.*?Executing.*?)(?=<br>|$)/g, '<span style="color:#f39c12; font-weight:bold;">$1</span>')
                 .replace(/(Status:.*?In Progress.*?)(?=<br>|$)/g, '<span style="color:#f39c12; font-weight:bold;">$1</span>')
                 .replace(/(Used .*?)(?=<br>|$)/g, '<span style="color:#95a5a6">$1</span>');
-            
-            // Setze CSS für bessere Struktur und Lesbarkeit
-            logEntry.style.fontFamily = "monospace";
             
             messageSpan.innerHTML = displayMessage;
         } else {

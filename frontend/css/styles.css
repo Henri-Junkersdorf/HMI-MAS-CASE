@@ -707,4 +707,426 @@ input:checked + .slider:before {
     display: flex;
     align-items: center;
     margin: 0 5px;
+}
+
+/* Capgemini Brand Guidelines Anpassungen */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+
+:root {
+    --cg-primary-blue: #0070AD; /* Haupt-Blau */
+    --cg-vibrant-blue: #00A3E0; /* Akzent-Blau */
+    --cg-dark-blue: #001B48;   /* Dunkler Hintergrund-Blau */
+    --cg-light-text: #FFFFFF;  /* Weißer Text */
+    --cg-grey-bg: #F0F2F5;     /* Heller Hintergrund für Kontrast */
+    --cg-border-color: #D1D9E0; /* Dezente Trennlinie */
+}
+
+/* Globale Schriftart anpassen */
+body, h1, h2, h3, h4, p, a, span, div {
+    font-family: 'Ubuntu', sans-serif; /* Ubuntu als Hauptschriftart */
+}
+
+/* Landing Page Styles - Farben anpassen */
+.hero {
+    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-dark-blue) 100%);
+    color: var(--cg-light-text);
+}
+
+.hexagon {
+    width: 100%;
+    height: 100%;
+    background: var(--cg-vibrant-blue);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.ai-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--cg-light-text);
+    z-index: 1;
+}
+
+h1 {
+    color: var(--cg-light-text);
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Einheitliches Styling für alle CTA-Buttons */
+.cta-button {
+    background: transparent; /* Transparenter Hintergrund für alle */
+    border: 2px solid var(--cg-vibrant-blue); /* Blauer Rand */
+    color: var(--cg-vibrant-blue); /* Blaue Schrift */
+    box-shadow: none; /* Kein Schatten */
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 35px; /* Etwas kleineres Padding für Umrandung */
+    border-radius: 50px;
+    font-size: 1.05rem; /* Etwas kleiner für Umrandung */
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0; /* Entferne individuellen Margin, da gap verwendet wird */
+    flex-shrink: 0; /* Verhindern, dass Buttons schrumpfen */
+}
+
+.cta-button:hover {
+    background: rgba(0, 163, 224, 0.1); /* Leichter blauer Hover-Effekt */
+    color: var(--cg-vibrant-blue);
+    box-shadow: none;
+    transform: translateY(-2px); /* Leichter Hover-Effekt */
+}
+
+.cta-button .arrow-icon {
+    fill: var(--cg-vibrant-blue); /* Pfeil auch blau */
+    width: 20px; /* Pfeil etwas kleiner */
+    height: 20px;
+}
+
+/* Value Props - Heller Hintergrund für Kontrast */
+.value-props {
+    background: var(--cg-grey-bg);
+    color: var(--cg-dark-blue);
+}
+
+.prop-card {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.prop-card h3 {
+    color: var(--cg-primary-blue);
+}
+
+.prop-card p {
+    color: #333;
+}
+
+/* Workflow Section - Dunkler Hintergrund */
+.workflow-section {
+    background: var(--cg-dark-blue);
+    color: var(--cg-light-text);
+}
+
+.workflow-section h2 {
+    color: var(--cg-light-text);
+}
+
+.step {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.step-number {
+    background: var(--cg-vibrant-blue);
+    color: var(--cg-light-text);
+}
+
+.step h4 {
+    color: var(--cg-vibrant-blue);
+}
+
+.step p {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Metrics Section - Kontrastierender blauer Hintergrund */
+.metrics {
+    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-vibrant-blue) 100%);
+    color: var(--cg-light-text);
+}
+
+.metrics h2 {
+    color: var(--cg-light-text);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.metric-value {
+    color: var(--cg-light-text);
+    font-size: 1.8rem;
+}
+
+.metric-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Neue Landing Page Styles */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-dark-blue) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content {
+    text-align: center;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.hero-logo {
+    position: relative;
+    margin: 0 auto 30px;
+    width: 120px;
+    height: 120px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.hexagon {
+    width: 100%;
+    height: 100%;
+    background: var(--cg-vibrant-blue);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.ai-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--cg-light-text);
+    z-index: 1;
+}
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--cg-light-text);
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2.5rem;
+}
+
+.arrow-icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    transition: transform 0.3s ease;
+}
+
+.cta-button:hover .arrow-icon {
+    transform: translateX(4px);
+}
+
+.value-props {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 80px 20px;
+    background: var(--cg-grey-bg);
+}
+
+.prop-card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.prop-card:hover {
+    transform: translateY(-8px);
+}
+
+.prop-icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.workflow-section {
+    padding: 100px 20px;
+    background: var(--cg-dark-blue);
+    text-align: center;
+}
+
+.workflow-section h2 {
+    color: var(--cg-light-text);
+    margin-bottom: 60px;
+}
+
+.workflow-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.step {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 16px;
+    position: relative;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background: var(--cg-vibrant-blue);
+    color: var(--cg-light-text);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin: -40px auto 20px;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.2rem;
+    }
+}
+
+/* Neue Metrics-Sektion */
+.metrics {
+    padding: 100px 20px;
+    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-vibrant-blue) 100%);
+    text-align: center;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cg-light-text);
+    line-height: 1.2;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.metric-label {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 200px;
+    margin: 0 auto;
+    letter-spacing: 0.3px;
+    line-height: 1.5;
+}
+
+/* Anpassungen für Value Props */
+.prop-card h3 {
+    color: var(--cg-primary-blue);
+    margin-bottom: 15px;
+}
+
+.prop-card p {
+    color: #333;
+    font-size: 1rem;
+}
+
+/* Workflow-Step Anpassungen */
+.step h4 {
+    color: var(--cg-vibrant-blue);
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.step p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.3px;
+}
+
+/* Korrektur für die Metrics-Überschrift */
+.metrics h2 {
+    color: var(--cg-light-text);
+    margin-bottom: 60px;
+    font-size: 28px;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Bestehenden Style für workflow-section h2 beibehalten */
+.workflow-section h2 {
+    color: var(--cg-light-text);
+    margin-bottom: 60px;
+}
+
+/* Zusätzliche Anpassungen für bessere vertikale Ausrichtung */
+.step, .metric-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 160px;
+}
+
+/* Button-Gruppe für Pyramiden-Layout */
+.button-group {
+    display: flex;          /* Flexbox aktivieren */
+    flex-direction: column; /* Hauptrichtung vertikal */
+    align-items: center;    /* Alle Elemente horizontal zentrieren */
+    gap: 15px;              /* Vertikaler Abstand zwischen oberem Button und unterer Reihe */
+    margin-top: 2.5rem;
+}
+
+/* Container für die untere Reihe der Buttons */
+.button-group-bottom-row {
+    display: flex;          /* Flexbox für die untere Reihe */
+    flex-direction: row;    /* Richtung horizontal (Standard, aber explizit) */
+    justify-content: center;/* Buttons in der Reihe zentrieren */
+    gap: 20px;              /* Horizontaler Abstand zwischen den unteren Buttons */
+    flex-wrap: wrap;        /* Umbruch für kleinere Bildschirme */
+    width: 100%;            /* Nimmt verfügbare Breite */
+}
+
+/* Gemeinsame Stile für Sektionsüberschriften */
+.workflow-section h2,
+.metrics h2 {
+    color: var(--cg-light-text);   /* Einheitliche helle Textfarbe */
+    margin-bottom: 60px;        /* Einheitlicher Abstand nach unten */
+    font-size: 28px;            /* Einheitliche Schriftgröße */
+    font-weight: 600;           /* Einheitliche Schriftdicke */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Einheitlicher Schatten für Lesbarkeit */
+    text-align: center;         /* Sicherstellen, dass beide zentriert sind */
 } 

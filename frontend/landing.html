@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SupplyChain AI | Industrial Procurement Optimization</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+   
+</head>
+<body>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-logo">
+                <div class="hexagon"></div>
+                <span class="ai-badge">AI</span>
+            </div>
+            <h1>Autonomous Supply Resilience</h1>
+            <p class="subtitle">AI-Driven Supply Chain Continuity Management</p>
+            <div class="button-group">
+                <a href="#" class="cta-button">
+                    <span>Initiation of Demand</span>
+                    <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                </a>
+                <div class="button-group-bottom-row">
+                    <a href="/limited" class="cta-button secondary">
+                        <span>Run Limited Stock Scenario</span>
+                        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                    </a>
+                    <a href="/" class="cta-button secondary">
+                        <span>Run No Supplier Available Scenario</span>
+                        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="value-props">
+        <div class="prop-card">
+            <div class="prop-icon">🤖</div>
+            <h3>Autonomous Operation</h3>
+            <p>Self-optimizing system requiring zero human intervention after initiation</p>
+        </div>
+        
+        <div class="prop-card">
+            <div class="prop-icon">🛡️</div>
+            <h3>Risk Mitigation</h3>
+            <p>Proactive detection of supply chain disruptions before operational impact</p>
+        </div>
+        
+        <div class="prop-card">
+            <div class="prop-icon">📉</div>
+            <h3>Cost Optimization</h3>
+            <p>Reduction in inventory costs through machine learning forecasting</p>
+        </div>
+    </section>
+
+    <section class="workflow-section">
+        <h2>Autonomous Supply Chain Workflow</h2>
+        <div class="workflow-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4>Continuous Monitoring</h4>
+                <p>Real-time tracking of supplier risk factors</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4>Intelligent Response</h4>
+                <p>Automated escalation protocol with contingency plans</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4>Self-Healing System</h4>
+                <p>Dynamic supplier switching without production downtime</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="metrics">
+        <h2>Operational Impact</h2>
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div class="metric-value">Faster</div>
+                <div class="metric-label">Response to Disruptions</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">Reduced</div>
+                <div class="metric-label">Manual Processes</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">Optimized</div>
+                <div class="metric-label">Inventory Costs</div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Scroll animation for feature cards
+        const cards = document.querySelectorAll('.feature-card');
+        
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.5 });
+
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+
+        // Parallax effect for hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelector('.hero').style.backgroundPositionY = `${scrolled * 0.5}px`;
+        });
+    </script>
+</body>
+</html>
