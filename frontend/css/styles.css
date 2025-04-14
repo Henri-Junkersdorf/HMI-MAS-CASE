@@ -1,1132 +1,1024 @@
-/* Global Styles */
+/* === Globale Stile & Resets === */
+/* Setzt Standard-Abstände und Box-Modell für alle Elemente zurück */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Standard-Schriftart für ältere Teile der App */
 }
 
+/* Grundlegende Stile für den gesamten Body */
 body {
-    background-color: #272936;
-    color: #f5f7fa;
-    line-height: 1.6;
-    height: 100vh; /* Use full viewport height */
-    margin: 0;
-    padding: 0;
+    background-color: #272936; /* Dunkler Hintergrund für die Agenten-Visualisierung */
+    color: #f5f7fa; /* Heller Text für Kontrast */
+    line-height: 1.6; /* Standard-Zeilenhöhe für Lesbarkeit */
+    height: 100vh; /* Body soll die volle Höhe des Ansichtsfensters einnehmen */
+    margin: 0; /* Entfernt Standard-Body-Margin */
+    padding: 0; /* Entfernt Standard-Body-Padding */
 }
 
+/* === Haupt-Layout-Container (Agenten-Visualisierung) === */
+/* Definiert die maximale Breite und zentriert den Hauptinhalt */
 .container {
-    max-width: 1800px; 
-    margin: 0 auto;
-    padding: 20px;
-    height: calc(100vh - 40px); /* Fill the viewport height minus padding */
-    display: flex;
-    flex-direction: column;
+    max-width: 1800px; /* Maximale Breite des Inhaltsbereichs */
+    margin: 0 auto; /* Zentriert den Container horizontal */
+    padding: 20px; /* Innenabstand oben/unten und seitlich */
+    height: calc(100vh - 40px); /* Füllt die Höhe des Viewports abzüglich des Paddings */
+    display: flex; /* Aktiviert Flexbox für das Layout */
+    flex-direction: column; /* Ordnet Kinder (Header, Main-Content) vertikal an */
 }
 
+/* Container für Workflow und Logs */
 .main-content {
-    display: flex;
-    gap: 20px;
-    flex: 1; /* Allow it to grow and fill available space */
-    min-height: 750px;
+    display: flex; /* Aktiviert Flexbox für nebeneinander liegende Spalten */
+    gap: 20px; /* Abstand zwischen Workflow- und Log-Container */
+    flex: 1; /* Erlaubt diesem Container, den verfügbaren vertikalen Platz auszufüllen */
+    min-height: 750px; /* Mindesthöhe, um sicherzustellen, dass Inhalt Platz hat */
 }
 
+/* === Header (Agenten-Visualisierung) === */
+/* Styling für den oberen Header-Bereich */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px; /* Reduced from 30px */
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 15px;
+    display: flex; /* Aktiviert Flexbox für Titel und Button */
+    justify-content: space-between; /* Platziert Titel links, Button rechts */
+    align-items: center; /* Zentriert Elemente vertikal im Header */
+    margin-bottom: 20px; /* Abstand unter dem Header */
+    border-bottom: 1px solid #ddd; /* Trennlinie unter dem Header */
+    padding-bottom: 15px; /* Abstand zur Trennlinie */
 }
 
+/* Styling für Hauptüberschrift (H1) im Header */
 h1 {
-    font-size: 28px;
-    color: #12ABDB;
+    font-size: 28px; /* Schriftgröße für den Titel */
+    color: #12ABDB; /* Blauer Farbton für den Titel */
 }
 
+/* Styling für generelle H2-Überschriften */
 h2 {
-    font-size: 22px;
-    color: #34495e;
-    margin-bottom: 15px;
+    font-size: 22px; /* Standardgröße für H2 */
+    color: #34495e; /* Dunkelgraue Farbe für H2 */
+    margin-bottom: 15px; /* Abstand unter H2 */
 }
 
-/* Button Styles */
+/* === Buttons (Agenten-Visualisierung) === */
+/* Styling für den "Start Analyzing"-Button */
 .run-button {
-    background-color: #12ABDB;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 500;
-    transition: background-color 0.3s;
+    background-color: #12ABDB; /* Blauer Hintergrund */
+    color: white; /* Weißer Text */
+    border: none; /* Kein Rand */
+    padding: 10px 20px; /* Innenabstand */
+    border-radius: 4px; /* Abgerundete Ecken */
+    cursor: pointer; /* Mauszeiger als Hand */
+    font-size: 16px; /* Schriftgröße */
+    font-weight: 500; /* Schriftgewicht */
+    transition: background-color 0.3s; /* Weicher Übergang für Hover-Effekt */
 }
 
+/* Hover-Effekt für den Button */
 .run-button:hover {
-    background-color: #0F8CB1;
+    background-color: #0F8CB1; /* Dunkleres Blau beim Überfahren */
 }
 
+/* Effekt beim Klicken auf den Button */
 .run-button:active {
-    transform: scale(0.98);
+    transform: scale(0.98); /* Leichte Verkleinerung beim Klicken */
 }
 
+/* Aussehen des Buttons, wenn er deaktiviert ist */
 .run-button:disabled {
-    background-color: #95a5a6;
-    cursor: not-allowed;
+    background-color: #95a5a6; /* Grauer Hintergrund */
+    cursor: not-allowed; /* Standard-Cursor für deaktivierte Elemente */
 }
 
-/* Workflow Container */
+/* === Workflow Container (Agenten-Visualisierung) === */
+/* Container für die Workflow-Visualisierung */
 .workflow-container {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    padding: 25px;
-    flex: 3; /* Changed from 4 to 3 to make it narrower */
-    display: flex;
-    flex-direction: column;
+    background-color: white; /* Weißer Hintergrund */
+    border-radius: 8px; /* Abgerundete Ecken */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Leichter Schatten */
+    padding: 25px; /* Innenabstand */
+    flex: 3; /* Nimmt 3 Teile des verfügbaren Platzes im main-content ein (relativ zu logs-container) */
+    display: flex; /* Aktiviert Flexbox */
+    flex-direction: column; /* Ordnet Titel und Diagramm vertikal an */
 }
 
+/* Titelbereich innerhalb des Workflow-Containers */
 .workflow-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px; /* Reduced from 20px */
+    display: flex; /* Aktiviert Flexbox */
+    justify-content: space-between; /* Platziert Titel links, Status rechts */
+    align-items: center; /* Zentriert Elemente vertikal */
+    margin-bottom: 15px; /* Abstand nach unten */
 }
 
+/* Styling für die Statusanzeige (Idle, Running, etc.) */
 .status-indicator {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
+    padding: 6px 12px; /* Innenabstand */
+    border-radius: 20px; /* Pillenform */
+    font-size: 14px; /* Kleinere Schriftgröße */
+    font-weight: 500; /* Mittleres Schriftgewicht */
 }
 
+/* Spezifische Stile für den "Idle"-Status */
 .status-indicator.idle {
-    background-color: #ecf0f1;
-    color: #7f8c8d;
+    background-color: #ecf0f1; /* Heller Grauton */
+    color: #7f8c8d; /* Dunklerer Grauton */
 }
 
+/* Spezifische Stile für den "Running"-Status */
 .status-indicator.running {
-    background-color: #3498db;
-    color: white;
-    animation: pulse 2s infinite;
+    background-color: #3498db; /* Blau */
+    color: white; /* Weißer Text */
+    animation: pulse 2s infinite; /* Aktiviert Puls-Animation */
 }
 
+/* Spezifische Stile für den "Completed"-Status */
 .status-indicator.completed {
-    background-color: #2ecc71;
-    color: white;
+    background-color: #2ecc71; /* Grün */
+    color: white; /* Weißer Text */
 }
 
+/* Spezifische Stile für den "Error"-Status */
 .status-indicator.error {
-    background-color: #e74c3c;
-    color: white;
+    background-color: #e74c3c; /* Rot */
+    color: white; /* Weißer Text */
 }
 
+/* Definition der Puls-Animation für den "Running"-Status */
 @keyframes pulse {
     0% { opacity: 1; }
-    50% { opacity: 0.7; }
+    50% { opacity: 0.7; } /* Reduziert Deckkraft in der Mitte */
     100% { opacity: 1; }
 }
 
+/* Container für das eigentliche Workflow-Diagramm mit Agenten und Verbindungen */
 .workflow-diagram {
-    flex: 1; /* Let it grow to fill available space */
-    height: auto; /* Auto height to fill container */
-    border: 1px solid #ecf0f1;
-    border-radius: 4px;
-    position: relative;
-    overflow: hidden;
-    background-color: #272936;
-    min-width: 700px; /* Match the container's max-width */
-    margin: 0 auto; /* Center the diagram */
-    margin-top: 0px; /* Removed margin completely */
+    flex: 1; /* Nimmt den restlichen Platz im workflow-container ein */
+    height: auto; /* Höhe passt sich dem Inhalt an */
+    border: 1px solid #ecf0f1; /* Heller Rand */
+    border-radius: 4px; /* Abgerundete Ecken */
+    position: relative; /* Wichtig für absolute Positionierung der Kinder (Agenten, Verbindungen) */
+    overflow: hidden; /* Verhindert, dass Inhalt überläuft */
+    background-color: #272936; /* Dunkler Hintergrund für das Diagramm */
+    min-width: 700px; /* Minimale Breite, um Layout zu gewährleisten */
+    margin: 0 auto; /* Zentriert das Diagramm horizontal */
+    margin-top: 0px; /* Kein oberer Abstand */
 }
 
-/* Agent Container */
+/* === Agenten-Container (Agenten-Visualisierung) === */
+/* Container, der alle Agenten-Elemente enthält und deren Positionierung steuert */
 .agent-container {
-    position: relative;
-    width: 600px; /* Fixed width for agents layout */
-    height: 900px; /* Fixed height for agents layout */
-    margin: 0 auto; /* Center horizontally */
-    top: 45%; /* Position vertically - moved down from 40% */
-    transform: translateY(-50%) scale(1); /* Center vertically and add scale support */
-    left: -5%; /* Adjusted to -5% for better balance */
-    transform-origin: center center;
-    transition: transform 0.3s ease;
+    position: relative; /* Wichtig für absolute Positionierung der Agenten */
+    width: 600px; /* Feste Breite für das Layout der Agenten */
+    height: 900px; /* Feste Höhe für das Layout der Agenten */
+    margin: 0 auto; /* Zentriert horizontal im workflow-diagram */
+    top: 45%; /* Vertikale Positionierung (leicht unter der Mitte) */
+    transform: translateY(-50%) scale(1); /* Zentriert vertikal und ermöglicht Skalierung (Zoom) */
+    left: -5%; /* Leichte Verschiebung nach links für visuelle Balance */
+    transform-origin: center center; /* Zoom-Mittelpunkt */
+    transition: transform 0.3s ease; /* Weicher Übergang beim Zoomen */
 }
 
-/* Agents */
+/* === Agenten-Styling (Agenten-Visualisierung) === */
+/* Basis-Styling für jedes Agenten-Element */
 .agent {
-    position: absolute;
-    width: 200px; /* Slightly wider to fit content */
-    padding: 15px;
-    background-color: #272936;
-    color: #f5f7fa;
-    border-radius: 6px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-left: 4px solid #3498db;
-    transition: all 0.3s ease;
-    z-index: 2; /* Ensure agents appear above connections */
+    position: absolute; /* Absolute Positionierung innerhalb des agent-container */
+    width: 200px; /* Breite der Agenten-Box */
+    padding: 15px; /* Innenabstand */
+    background-color: #272936; /* Hintergrund passend zum Diagramm */
+    color: #f5f7fa; /* Heller Text */
+    border-radius: 6px; /* Abgerundete Ecken */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Leichter Schatten */
+    border-left: 4px solid #3498db; /* Blauer linker Rand als Indikator */
+    transition: all 0.3s ease; /* Weicher Übergang für Statusänderungen */
+    z-index: 2; /* Stellt sicher, dass Agenten über den Verbindungen liegen */
 }
 
+/* Styling für das runde Icon neben jedem Agenten */
 .agent-icon {
-    position: absolute;
-    top: -15px;
-    right: -15px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    color: #3498db;
-    transition: all 0.3s ease;
+    position: absolute; /* Absolute Positionierung relativ zum Agenten */
+    top: -15px; /* Positioniert Icon über der Box */
+    right: -15px; /* Positioniert Icon rechts von der Box */
+    width: 40px; /* Breite des Icons */
+    height: 40px; /* Höhe des Icons */
+    border-radius: 50%; /* Macht das Icon rund */
+    background-color: white; /* Weißer Hintergrund */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Schatten für Tiefe */
+    display: flex; /* Aktiviert Flexbox für Zentrierung des Symbols */
+    justify-content: center; /* Zentriert Symbol horizontal */
+    align-items: center; /* Zentriert Symbol vertikal */
+    font-size: 20px; /* Größe des Symbols (Emoji/Icon) */
+    color: #3498db; /* Standardfarbe des Symbols */
+    transition: all 0.3s ease; /* Weicher Übergang für Statusänderungen */
 }
 
-/* Fix for communication specialist icon alignment */
+/* Spezifische Korrektur für das E-Mail-Icon des Kommunikations-Spezialisten */
 #communication .agent-icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-bottom: 3px; /* Adjust positioning for the email icon */
+    padding-bottom: 3px; /* Leichte Anpassung der vertikalen Position */
 }
 
+/* Icon-Farbe für wartende Agenten */
 .agent-waiting .agent-icon {
-    color: #95a5a6;
+    color: #95a5a6; /* Grau */
 }
 
+/* Icon-Stil für arbeitende Agenten */
 .agent-working .agent-icon {
-    background-color: #3498db;
-    color: white;
+    background-color: #3498db; /* Blauer Hintergrund */
+    color: white; /* Weißes Symbol */
 }
 
+/* Icon-Stil für abgeschlossene Agenten */
 .agent-completed .agent-icon {
-    background-color: #2ecc71;
-    color: white;
+    background-color: #2ecc71; /* Grüner Hintergrund */
+    color: white; /* Weißes Symbol */
 }
 
+/* Definition der Spin-Animation (aktuell nicht verwendet) */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
+/* Hervorhebung des aktuell aktiven Agenten */
 .agent.active {
-    box-shadow: 0 0 0 2px #3498db, 0 4px 15px rgba(0, 0, 0, 0.15);
-    transform: translateY(-3px);
+    box-shadow: 0 0 0 2px #3498db, 0 4px 15px rgba(0, 0, 0, 0.15); /* Blauer Rahmen und stärkerer Schatten */
+    transform: translateY(-3px); /* Leichte Anhebung */
 }
 
+/* Linker Rand für abgeschlossene Agenten */
 .agent.completed {
-    border-left-color: #2ecc71;
+    border-left-color: #2ecc71; /* Grün */
 }
 
+/* Styling für den Namen des Agenten */
 .agent-name {
-    font-weight: 600;
-    font-size: 16px;
-    margin-bottom: 5px;
-    color: #f5f7fa;
+    font-weight: 600; /* Fetter Text */
+    font-size: 16px; /* Schriftgröße */
+    margin-bottom: 5px; /* Abstand nach unten */
+    color: #f5f7fa; /* Heller Text */
 }
 
+/* Styling für die Rolle/Beschreibung des Agenten */
 .agent-role {
-    font-size: 13px;
-    color: #bdc3c7;
-    margin-bottom: 10px;
+    font-size: 13px; /* Kleinere Schrift */
+    color: #bdc3c7; /* Heller Grauton */
+    margin-bottom: 10px; /* Abstand nach unten */
 }
 
+/* Basis-Styling für die Statusanzeige im Agenten (Waiting, Working, Completed) */
 .agent-status {
-    font-size: 12px;
-    padding: 3px 8px;
-    border-radius: 12px;
-    display: inline-block;
+    font-size: 12px; /* Kleine Schrift */
+    padding: 3px 8px; /* Innenabstand */
+    border-radius: 12px; /* Abgerundete Ecken */
+    display: inline-block; /* Verhindert, dass es die volle Breite einnimmt */
 }
 
+/* Spezifische Farben für jeden Status */
 .agent-status.waiting {
-    background-color: #12ABDB;
+    background-color: #12ABDB; /* Helles Blau */
     color: white;
 }
-
 .agent-status.working {
-    background-color: #3498db;
+    background-color: #3498db; /* Standard-Blau */
     color: white;
 }
-
 .agent-status.completed {
-    background-color: #2ecc71;
+    background-color: #2ecc71; /* Grün */
     color: white;
 }
 
-/* Agent status styling */
+/* Hintergrund- und Randfarben der Agenten-Box basierend auf dem Status */
 .agent-waiting {
-    background-color: #272936;
-    border: 2px solid #3f4255;
+    background-color: #272936; /* Standard-Dunkelblau */
+    border: 2px solid #3f4255; /* Dunkelgrauer Rand */
 }
-
 .agent-working {
     background-color: #272936;
-    border: 2px solid #0d6efd;
-    box-shadow: 0 0 15px rgba(13, 110, 253, 0.5);
+    border: 2px solid #0d6efd; /* Helles Blau als Rand */
+    box-shadow: 0 0 15px rgba(13, 110, 253, 0.5); /* Leuchtender Effekt */
 }
-
 .agent-completed {
     background-color: #272936;
-    border: 2px solid #198754;
-    box-shadow: 0 0 15px rgba(25, 135, 84, 0.5);
+    border: 2px solid #198754; /* Grüner Rand */
+    box-shadow: 0 0 15px rgba(25, 135, 84, 0.5); /* Grüner Leuchteffekt */
 }
 
-/* Status text colors */
-.agent-status.waiting {
-    color: white;
-    font-weight: bold;
-}
-
-.agent-status.working {
-    color: white;
-    font-weight: bold;
-}
-
+/* Zusätzliches Styling für den Statustext selbst */
+.agent-status.waiting,
+.agent-status.working,
 .agent-status.completed {
-    color: white;
-    font-weight: bold;
+    color: white; /* Sicherstellen, dass Text weiß ist */
+    font-weight: bold; /* Text fetten */
 }
 
-/* Connections */
+/* === Verbindungen (Agenten-Visualisierung) === */
+/* Styling für die Linien zwischen den Agenten */
 .connection {
-    position: absolute;
-    background-color: #bdc3c7;
-    transition: background-color 0.3s;
-    z-index: 1; /* Position connections below agents */
+    position: absolute; /* Absolute Positionierung im workflow-diagram */
+    background-color: #bdc3c7; /* Standardfarbe (Grau) */
+    transition: background-color 0.3s; /* Weicher Übergang bei Statusänderung */
+    z-index: 1; /* Stellt sicher, dass Verbindungen hinter Agenten liegen */
 }
 
-.connection.active {
-    background-color: #3498db;
-}
+/* Farben für aktive, abgeschlossene oder fehlerhafte Verbindungen */
+.connection.active { background-color: #3498db; } /* Blau */
+.connection.completed { background-color: #2ecc71; } /* Grün */
+.connection.error { background-color: #e74c3c; } /* Rot */
 
-.connection.completed {
-    background-color: #2ecc71;
-}
-
-.connection.error {
-    background-color: #e74c3c;
-}
-
-/* Logs Container */
+/* === Logs Container (Agenten-Visualisierung) === */
+/* Container für den Log-Bereich */
 .logs-container {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    padding: 25px;
-    flex: 7; /* Changed from 6 to 7 to make it wider */
-    display: flex;
-    flex-direction: column;
+    background-color: white; /* Weißer Hintergrund */
+    border-radius: 8px; /* Abgerundete Ecken */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Leichter Schatten */
+    padding: 25px; /* Innenabstand */
+    flex: 7; /* Nimmt 7 Teile des verfügbaren Platzes ein (breiter als Workflow) */
+    display: flex; /* Aktiviert Flexbox */
+    flex-direction: column; /* Ordnet Header und Log-Bereich vertikal an */
 }
 
-/* Logs Header */
+/* Header innerhalb des Log-Containers */
 .logs-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px; /* Reduced from original */
+    display: flex; /* Aktiviert Flexbox */
+    justify-content: space-between; /* Platziert Titel links, Toggle rechts */
+    align-items: center; /* Zentriert Elemente vertikal */
+    margin-bottom: 15px; /* Abstand nach unten */
 }
 
+/* Stellt sicher, dass die H2 im Logs-Header keinen unteren Abstand hat */
 .logs-header h2 {
     margin-bottom: 0;
 }
 
+/* Container für den Summary View Toggle-Schalter */
 .view-toggle {
-    display: flex;
-    align-items: center;
+    display: flex; /* Aktiviert Flexbox */
+    align-items: center; /* Zentriert Elemente vertikal */
 }
 
+/* Label für den Toggle-Schalter */
 .toggle-label {
-    margin-left: 10px;
-    font-size: 14px;
-    color: #555;
+    margin-left: 10px; /* Abstand zum Schalter */
+    font-size: 14px; /* Kleine Schrift */
+    color: #555; /* Dunkelgrau */
 }
 
-/* Toggle Switch */
+/* === Toggle Switch (Summary View) === */
+/* Basis-Styling für den Schalter-Container */
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 24px;
+    position: relative; /* Wichtig für absolute Positionierung des Sliders */
+    display: inline-block; /* Passt sich der Breite an */
+    width: 50px; /* Breite des Schalters */
+    height: 24px; /* Höhe des Schalters */
 }
 
+/* Versteckt die eigentliche Checkbox */
 .switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
+/* Styling des Schiebers (der sichtbare Teil des Schalters) */
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
+    position: absolute; /* Absolute Positionierung im switch-Container */
+    cursor: pointer; /* Mauszeiger als Hand */
+    top: 0; left: 0; right: 0; bottom: 0; /* Füllt den Container aus */
+    background-color: #ccc; /* Grauer Hintergrund im "Aus"-Zustand */
+    transition: .4s; /* Weicher Übergang */
 }
 
+/* Styling des runden Knopfes im Schieber */
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
+    position: absolute; /* Absolute Positionierung im slider */
+    content: ""; /* Erforderlich für ::before Pseudo-Elemente */
+    height: 16px; /* Höhe des Knopfes */
+    width: 16px; /* Breite des Knopfes */
+    left: 4px; /* Linker Abstand */
+    bottom: 4px; /* Unterer Abstand */
+    background-color: white; /* Weißer Knopf */
+    transition: .4s; /* Weicher Übergang */
 }
 
+/* Hintergrundfarbe des Schalters, wenn aktiviert (Checkbox gecheckt) */
 input:checked + .slider {
-    background-color: #3498db;
+    background-color: #3498db; /* Blau */
 }
 
+/* Leichter Rahmen, wenn der Schalter den Fokus hat */
 input:focus + .slider {
     box-shadow: 0 0 1px #3498db;
 }
 
+/* Bewegung des Knopfes, wenn aktiviert */
 input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(26px); /* Verschiebt Knopf nach rechts */
 }
 
-.slider.round {
-    border-radius: 24px;
-}
+/* Macht den Schalter und den Knopf rund */
+.slider.round { border-radius: 24px; }
+.slider.round:before { border-radius: 50%; }
 
-.slider.round:before {
-    border-radius: 50%;
-}
-
-/* Summary Log Entry */
+/* === Log-Einträge Styling === */
+/* Styling für Log-Einträge im Summary View Modus */
 .log-entry.summary {
-    display: flex;
-    align-items: center;
-    background-color: #1a2c39;
-    border-radius: 6px;
-    padding: 10px 15px;
-    margin-bottom: 12px;
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    line-height: 1.3;
-    border-left: 5px solid #3498db;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex; /* Aktiviert Flexbox für horizontale Anordnung */
+    align-items: center; /* Zentriert Elemente vertikal */
+    background-color: #1a2c39; /* Dunkelblauer Hintergrund */
+    border-radius: 6px; /* Abgerundete Ecken */
+    padding: 10px 15px; /* Innenabstand */
+    margin-bottom: 12px; /* Abstand zwischen Einträgen */
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; /* Lesbare UI-Schrift */
+    line-height: 1.3; /* Angepasste Zeilenhöhe */
+    border-left: 5px solid #3498db; /* Standard-Randfarbe (Blau) */
+    transition: all 0.2s ease; /* Weicher Übergang für Hover */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Leichter Schatten */
 }
 
+/* Hover-Effekt für Summary-Einträge */
 .log-entry.summary:hover {
-    background-color: #1e3446;
-    transform: translateY(-2px);
+    background-color: #1e3446; /* Etwas hellerer Hintergrund */
+    transform: translateY(-2px); /* Leichte Anhebung */
 }
 
+/* Zeitstempel im Summary View (versteckt) */
 .log-entry.summary .log-timestamp {
-    display: none; /* Hide timestamps in summary view too */
-    color: #95a5a6;
-    font-size: 14px;
-    margin-right: 12px;
-    width: 65px;
-    flex-shrink: 0;
+    display: none; /* Zeitstempel werden im Summary nicht angezeigt */
 }
 
+/* Styling des Agenten-Namens im Summary View */
 .log-entry.summary .log-agent {
-    color: #3498db;
-    font-weight: bold;
-    margin-right: 14px;
-    font-size: 16px;
-    background-color: rgba(52, 152, 219, 0.15);
-    padding: 4px 10px;
-    border-radius: 4px;
-    min-width: 130px;
-    text-align: center;
-    flex-shrink: 0;
+    color: #3498db; /* Standardfarbe (Blau) */
+    font-weight: bold; /* Fetter Text */
+    margin-right: 14px; /* Rechter Abstand */
+    font-size: 16px; /* Größere Schrift */
+    background-color: rgba(52, 152, 219, 0.15); /* Leicht transparenter Hintergrund */
+    padding: 4px 10px; /* Innenabstand */
+    border-radius: 4px; /* Abgerundete Ecken */
+    min-width: 130px; /* Mindestbreite für Konsistenz */
+    text-align: center; /* Zentrierter Text */
+    flex-shrink: 0; /* Verhindert, dass der Name schrumpft */
 }
 
+/* Styling der Log-Nachricht im Summary View */
 .log-entry.summary .log-message {
-    font-weight: 500;
-    color: #f8f9fa;
-    display: inline;
-    margin-top: 0;
-    font-size: 16px;
-    flex-grow: 1;
-    letter-spacing: 0.2px;
+    font-weight: 500; /* Mittleres Schriftgewicht */
+    color: #f8f9fa; /* Heller Text */
+    display: inline; /* Standard-Display */
+    margin-top: 0; /* Kein oberer Abstand */
+    font-size: 16px; /* Größere Schrift */
+    flex-grow: 1; /* Nimmt restlichen Platz ein */
+    letter-spacing: 0.2px; /* Leichter Zeichenabstand */
 }
 
-/* Add specific agent colors for better visual organization */
-.log-entry.summary[data-agent-type="Forecasting"] {
-    border-left: 5px solid #2980b9; /* Blue */
-}
+/* Spezifische Rand- und Hintergrundfarben für jeden Agenten-Typ im Summary View */
+.log-entry.summary[data-agent-type="Forecasting"] { border-left-color: #2980b9; }
+.log-entry.summary[data-agent-type="Forecasting"] .log-agent { color: #2980b9; background-color: rgba(41, 128, 185, 0.15); }
 
-.log-entry.summary[data-agent-type="Forecasting"] .log-agent {
-    color: #2980b9;
-    background-color: rgba(41, 128, 185, 0.15);
-}
+.log-entry.summary[data-agent-type="Availability"] { border-left-color: #16a085; }
+.log-entry.summary[data-agent-type="Availability"] .log-agent { color: #16a085; background-color: rgba(22, 160, 133, 0.15); }
 
-.log-entry.summary[data-agent-type="Availability"] {
-    border-left: 5px solid #16a085; /* Teal */
-}
+.log-entry.summary[data-agent-type="Alt. Supplier"] { border-left-color: #f39c12; }
+.log-entry.summary[data-agent-type="Alt. Supplier"] .log-agent { color: #f39c12; background-color: rgba(243, 156, 18, 0.15); }
 
-.log-entry.summary[data-agent-type="Availability"] .log-agent {
-    color: #16a085;
-    background-color: rgba(22, 160, 133, 0.15);
-}
+.log-entry.summary[data-agent-type="Performance"] { border-left-color: #9b59b6; }
+.log-entry.summary[data-agent-type="Performance"] .log-agent { color: #9b59b6; background-color: rgba(155, 89, 182, 0.15); }
 
-.log-entry.summary[data-agent-type="Alt. Supplier"] {
-    border-left: 5px solid #f39c12; /* Orange */
-}
+.log-entry.summary[data-agent-type="Communication"] { border-left-color: #e74c3c; }
+.log-entry.summary[data-agent-type="Communication"] .log-agent { color: #e74c3c; background-color: rgba(231, 76, 60, 0.15); }
 
-.log-entry.summary[data-agent-type="Alt. Supplier"] .log-agent {
-    color: #f39c12;
-    background-color: rgba(243, 156, 18, 0.15);
-}
-
-.log-entry.summary[data-agent-type="Performance"] {
-    border-left: 5px solid #9b59b6; /* Purple */
-}
-
-.log-entry.summary[data-agent-type="Performance"] .log-agent {
-    color: #9b59b6;
-    background-color: rgba(155, 89, 182, 0.15);
-}
-
-.log-entry.summary[data-agent-type="Communication"] {
-    border-left: 5px solid #e74c3c; /* Red */
-}
-
-.log-entry.summary[data-agent-type="Communication"] .log-agent {
-    color: #e74c3c;
-    background-color: rgba(231, 76, 60, 0.15);
-}
-
-/* Group consecutive entries from the same agent */
-.log-entry.summary + .log-entry.summary[data-agent-type="Forecasting"] {
-    margin-top: -10px;
-}
-
-.log-entry.summary + .log-entry.summary[data-agent-type="Availability"] {
-    margin-top: -10px;
-}
-
-.log-entry.summary + .log-entry.summary[data-agent-type="Alt. Supplier"] {
-    margin-top: -10px;
-}
-
-.log-entry.summary + .log-entry.summary[data-agent-type="Performance"] {
-    margin-top: -10px;
-}
-
+/* Reduziert den oberen Abstand, wenn mehrere Nachrichten vom selben Agenten aufeinanderfolgen */
+.log-entry.summary + .log-entry.summary[data-agent-type="Forecasting"],
+.log-entry.summary + .log-entry.summary[data-agent-type="Availability"],
+.log-entry.summary + .log-entry.summary[data-agent-type="Alt. Supplier"],
+.log-entry.summary + .log-entry.summary[data-agent-type="Performance"],
 .log-entry.summary + .log-entry.summary[data-agent-type="Communication"] {
-    margin-top: -10px;
+    margin-top: -10px; /* Lässt Blöcke zusammenrücken */
 }
 
+/* Styling des Log-Anzeigebereichs (Detailansicht) */
 .logs {
-    flex: 1; /* Let it grow to fill available space */
-    height: auto; /* Auto height to fill container */
-    overflow-y: auto;
-    background-color: #272936;
-    color: #ecf0f1;
-    padding: 15px;
-    border-radius: 4px;
-    font-family: 'Consolas', 'Courier New', monospace;
-    white-space: pre-wrap;
-    word-break: break-word;
-    line-height: 1.5;
-    margin-top: 12px; /* Increased from 10px to 12px */
+    flex: 1; /* Nimmt verfügbaren Platz im logs-container ein */
+    height: auto; /* Automatische Höhe */
+    overflow-y: auto; /* Fügt vertikalen Scrollbalken hinzu, wenn nötig */
+    background-color: #272936; /* Dunkler Hintergrund */
+    color: #ecf0f1; /* Heller Text */
+    padding: 15px; /* Innenabstand */
+    border-radius: 4px; /* Abgerundete Ecken */
+    font-family: 'Consolas', 'Courier New', monospace; /* Monospace-Schrift für Logs */
+    white-space: pre-wrap; /* Behält Zeilenumbrüche und Leerzeichen bei, erlaubt aber Umbruch */
+    word-break: break-word; /* Bricht lange Wörter um */
+    line-height: 1.5; /* Zeilenhöhe */
+    margin-top: 12px; /* Abstand zum Header */
 }
 
+/* Basis-Styling für einzelne Log-Einträge (Detailansicht) */
 .log-entry {
-    margin-bottom: 6px;
-    border-bottom: 1px solid #2c3e50;
-    padding-bottom: 6px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
+    margin-bottom: 6px; /* Abstand zwischen Einträgen */
+    border-bottom: 1px solid #2c3e50; /* Dunkle Trennlinie */
+    padding-bottom: 6px; /* Abstand zur Trennlinie */
+    font-size: 14px; /* Standardschriftgröße */
+    display: flex; /* Flexbox für horizontale Anordnung */
+    align-items: center; /* Vertikale Zentrierung */
 }
 
+/* Zeitstempel (Detailansicht, aktuell versteckt) */
 .log-timestamp {
-    display: none; /* Hide timestamps */
+    display: none; /* Zeitstempel sind generell versteckt */
     color: #95a5a6;
     font-size: 12px;
     margin-right: 8px;
 }
 
+/* Agenten-Name (Detailansicht) */
 .log-agent {
-    color: #3498db;
-    font-weight: bold;
-    margin-right: 14px;
-    font-size: 14px;
-    min-width: 100px; /* Give agent labels consistent width */
+    color: #3498db; /* Blau */
+    font-weight: bold; /* Fett */
+    margin-right: 14px; /* Rechter Abstand */
+    font-size: 14px; /* Standardschriftgröße */
+    min-width: 100px; /* Mindestbreite für Ausrichtung */
 }
 
+/* Log-Nachricht (Detailansicht) */
 .log-message {
-    color: #f8f9fa;
-    font-size: 14px;
+    color: #f8f9fa; /* Heller Text */
+    font-size: 14px; /* Standardschriftgröße */
 }
 
-/* Special characters handling */
+/* Verhindert, dass Log-Nachrichten unnötig umbrechen (außer bei Emoji-Logs) */
 .log-message:not([emoji-log]) {
-    display: inline-block;
-    max-width: 100%;
+    display: inline-block; /* Verhält sich wie Text */
+    max-width: 100%; /* Maximale Breite */
 }
 
-/* Email log entries */
-.log-entry.email-sent {
-    background-color: rgba(46, 204, 113, 0.2);
-    border-left: 2px solid #2ecc71;
-    margin-bottom: 4px;
-    padding: 2px 4px;
-}
+/* Spezifisches Styling für verschiedene Log-Typen (Hintergrund, Rand) */
+.log-entry.email-sent { background-color: rgba(46, 204, 113, 0.2); border-left: 2px solid #2ecc71; }
+.log-entry.email-error { background-color: rgba(231, 76, 60, 0.2); border-left: 2px solid #e74c3c; }
+.log-entry.email-info { background-color: rgba(52, 152, 219, 0.2); border-left: 2px solid #3498db; }
+.log-entry.completed-status { background-color: rgba(46, 204, 113, 0.2); border-left: 2px solid #2ecc71; }
+.log-entry.working-status { background-color: rgba(52, 152, 219, 0.2); border-left: 2px solid #3498db; }
+.log-entry.thinking-status { background-color: rgba(241, 196, 15, 0.2); border-left: 2px solid #f1c40f; }
+.log-entry.error-status { background-color: rgba(231, 76, 60, 0.2); border-left: 2px solid #e74c3c; }
 
-.log-entry.email-error {
-    background-color: rgba(231, 76, 60, 0.2);
-    border-left: 2px solid #e74c3c;
-    margin-bottom: 4px;
-    padding: 2px 4px;
-}
-
-.log-entry.email-info {
-    background-color: rgba(52, 152, 219, 0.2);
-    border-left: 2px solid #3498db;
-    margin-bottom: 4px;
-    padding: 2px 4px;
-}
-
-/* Completed and working status log entries */
-.log-entry.completed-status {
-    background-color: rgba(46, 204, 113, 0.2);
-    border-left: 2px solid #2ecc71;
-}
-
-.log-entry.working-status {
-    background-color: rgba(52, 152, 219, 0.2);
-    border-left: 2px solid #3498db;
-}
-
-/* Thinking status log entries */
-.log-entry.thinking-status {
-    background-color: rgba(241, 196, 15, 0.2);
-    border-left: 2px solid #f1c40f;
-}
-
-/* Error status log entries */
-.log-entry.error-status {
-    background-color: rgba(231, 76, 60, 0.2);
-    border-left: 2px solid #e74c3c;
-}
-
-/* CrewAI special styling */
+/* Stellt sicher, dass CrewAI-spezifische Formatierungen (Einrückungen) erhalten bleiben */
 .log-entry .log-message {
     white-space: pre-wrap;
     font-family: 'Consolas', 'Courier New', monospace;
 }
 
-/* Special styling for emoji logs */
+/* Ermöglicht Umbruch für spezielle Emoji-Logs */
 .log-entry .log-message[emoji-log] {
-    display: block;
-    padding-top: 5px;
+    display: block; /* Erzwingt Block-Darstellung */
+    padding-top: 5px; /* Kleiner oberer Abstand */
 }
 
-/* Highlight agent names and statuses more clearly */
+/* Hebt abgeschlossene Statusmeldungen hervor */
 .log-message span[style*="color:#2ecc71"] {
-    font-weight: bold;
-    background-color: rgba(46, 204, 113, 0.1);
-    padding: 0 3px;
-    border-radius: 3px;
+    font-weight: bold; /* Fett */
+    background-color: rgba(46, 204, 113, 0.1); /* Leichter grüner Hintergrund */
+    padding: 0 3px; /* Kleiner Innenabstand */
+    border-radius: 3px; /* Abgerundete Ecken */
 }
 
-/* Responsive adjustments */
+/* === Responsive Anpassungen === */
+/* Stile für Bildschirme mit einer maximalen Breite von 1400px */
 @media (max-width: 1400px) {
+    /* Ändert das Layout von nebeneinander zu untereinander */
     .main-content {
         flex-direction: column;
     }
-    
+
+    /* Workflow-Container nimmt volle Breite ein */
     .workflow-container {
-        width: 100%; /* Take full width in column layout */
-        flex: 1; /* Allow it to grow normally */
-        min-height: 1100px; /* Set a minimum height for better visibility */
-        overflow-x: auto;
-        margin-bottom: 30px;
+        width: 100%;
+        flex: 1;
+        min-height: 1100px; /* Erhöhte Mindesthöhe */
+        overflow-x: auto; /* Horizontal scrollbar, falls Diagramm zu breit */
+        margin-bottom: 30px; /* Abstand zum Log-Container */
     }
-    
+
+    /* Workflow-Diagramm nimmt verfügbaren Platz ein */
     .workflow-diagram {
-        min-width: 700px; /* Match container's max-width */
-        height: 100%; /* Fill the container height */
-        width: 100%; /* Take full width to match logs-container logic */
-        margin: 0 auto; /* Center the diagram */
+        min-width: 700px;
+        height: 100%;
+        width: 100%;
+        margin: 0 auto;
     }
-    
+
+    /* Log-Container nimmt volle Breite ein */
     .logs-container {
-        width: 100%; /* Take full width in column layout */
-        flex: 1; /* Allow it to grow normally */
-        min-height: 800px; /* Set a minimum height for the logs container */
+        width: 100%;
+        flex: 1;
+        min-height: 800px; /* Erhöhte Mindesthöhe */
     }
 }
 
-/* Zoom Controls */
+/* === Zoom Controls (Agenten-Visualisierung) === */
+/* Positionierung und Container für Zoom-Buttons */
 .zoom-controls {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-    z-index: 10;
+    position: absolute; /* Absolute Positionierung im workflow-diagram */
+    bottom: 20px; /* Abstand vom unteren Rand */
+    right: 20px; /* Abstand vom rechten Rand */
+    display: flex; /* Aktiviert Flexbox */
+    gap: 10px; /* Abstand zwischen den Elementen */
+    z-index: 10; /* Stellt sicher, dass Controls über allem liegen */
 }
 
+/* Styling für die Zoom-Buttons (+/-) */
 .zoom-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+    width: 36px; height: 36px; /* Größe */
+    border-radius: 50%; /* Rund */
+    background-color: #3498db; /* Blau */
+    color: white; /* Weißes Symbol */
+    border: none; /* Kein Rand */
+    cursor: pointer; /* Hand-Cursor */
+    display: flex; align-items: center; justify-content: center; /* Zentriert Symbol */
+    font-size: 20px; /* Symbolgröße */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Leichter Schatten */
+    transition: all 0.3s ease; /* Weicher Übergang */
 }
 
+/* Hover-Effekt für Zoom-Buttons */
 .zoom-btn:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
+    background-color: #2980b9; /* Dunkleres Blau */
+    transform: translateY(-2px); /* Leichte Anhebung */
 }
 
+/* Klick-Effekt für Zoom-Buttons */
 .zoom-btn:active {
-    transform: translateY(0);
+    transform: translateY(0); /* Zurücksetzen der Anhebung */
 }
 
+/* Anzeige des aktuellen Zoom-Levels */
 .zoom-level {
-    background-color: rgba(52, 152, 219, 0.1);
-    padding: 5px 10px;
-    border-radius: 15px;
-    color: #3498db;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    margin: 0 5px;
+    background-color: rgba(52, 152, 219, 0.1); /* Leicht transparenter blauer Hintergrund */
+    padding: 5px 10px; /* Innenabstand */
+    border-radius: 15px; /* Abgerundet */
+    color: #3498db; /* Blaue Schrift */
+    font-size: 14px; /* Kleine Schrift */
+    display: flex; align-items: center; /* Vertikale Zentrierung */
+    margin: 0 5px; /* Horizontaler Abstand zu Buttons */
 }
 
-/* Capgemini Brand Guidelines Anpassungen */
+/* === Capgemini Brand Guidelines / Landing Page Styles === */
+/* Importiert die Ubuntu-Schriftart von Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
 
+/* Definition der CSS-Variablen für die Capgemini-Farbpalette */
 :root {
-    --cg-primary-blue: #0070AD; /* Haupt-Blau */
-    --cg-vibrant-blue: #00A3E0; /* Akzent-Blau */
-    --cg-dark-blue: #001B48;   /* Dunkler Hintergrund-Blau */
-    --cg-light-text: #FFFFFF;  /* Weißer Text */
-    --cg-grey-bg: #F0F2F5;     /* Heller Hintergrund für Kontrast */
-    --cg-border-color: #D1D9E0; /* Dezente Trennlinie */
+    --cg-primary-blue: #0070AD; /* Capgemini Haupt-Blau */
+    --cg-vibrant-blue: #00A3E0; /* Capgemini Akzent-Blau */
+    --cg-dark-blue: #001B48;   /* Capgemini Dunkelblau */
+    --cg-light-text: #FFFFFF;  /* Weiß */
+    --cg-grey-bg: #F0F2F5;     /* Helles Grau für Hintergründe */
+    --cg-border-color: #D1D9E0; /* Farbe für dezente Ränder */
 }
 
-/* Globale Schriftart anpassen */
+/* Wendet Ubuntu als globale Schriftart für die Landing Page an */
+/* (Selektor ist redundant, da oben schon gesetzt, aber zur Verdeutlichung hier) */
 body, h1, h2, h3, h4, p, a, span, div {
-    font-family: 'Ubuntu', sans-serif; /* Ubuntu als Hauptschriftart */
+    font-family: 'Ubuntu', sans-serif;
 }
 
-/* Landing Page Styles - Farben anpassen */
+/* Hero Section der Landing Page */
 .hero {
-    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-dark-blue) 100%);
-    color: var(--cg-light-text);
+    height: 100vh; /* Volle Viewport-Höhe */
+    display: flex; align-items: center; justify-content: center; /* Zentriert Inhalt */
+    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-dark-blue) 100%); /* Blauer Farbverlauf */
+    color: var(--cg-light-text); /* Heller Text */
+    position: relative; /* Für absolute Positionierung von Kindern */
+    overflow: hidden; /* Verhindert Überlaufen */
 }
 
+/* Container für den Inhalt im Hero-Bereich */
+.hero-content {
+    text-align: center; /* Zentriert Text */
+    max-width: 800px; /* Maximale Breite */
+    padding: 0 20px; /* Horizontaler Innenabstand */
+}
+
+/* Container für das Logo (Hexagon + AI) */
+.hero-logo {
+    position: relative; /* Für absolute Positionierung des AI-Badges */
+    margin: 0 auto 30px; /* Zentriert horizontal, Abstand nach unten */
+    width: 120px; height: 120px; /* Größe */
+    animation: float 3s ease-in-out infinite; /* Wendet Schwebe-Animation an */
+}
+
+/* Das sechseckige Element des Logos */
 .hexagon {
-    width: 100%;
-    height: 100%;
-    background: var(--cg-vibrant-blue);
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    width: 100%; height: 100%; /* Füllt den Logo-Container */
+    background: var(--cg-vibrant-blue); /* Hintergrundfarbe (Akzent-Blau) */
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); /* Erzeugt Sechseck-Form */
 }
 
+/* Das "AI"-Text-Badge im Logo */
 .ai-badge {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--cg-light-text);
     z-index: 1;
-}
-
-h1 {
-    color: var(--cg-light-text);
-}
-
-.subtitle {
-    color: rgba(255, 255, 255, 0.9);
-}
-
-/* Einheitliches Styling für alle CTA-Buttons */
-.cta-button {
-    background: transparent; /* Transparenter Hintergrund für alle */
-    border: 2px solid var(--cg-vibrant-blue); /* Blauer Rand */
-    color: var(--cg-vibrant-blue); /* Blaue Schrift */
-    box-shadow: none; /* Kein Schatten */
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 35px; /* Etwas kleineres Padding für Umrandung */
-    border-radius: 50px;
-    font-size: 1.05rem; /* Etwas kleiner für Umrandung */
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin: 0; /* Entferne individuellen Margin, da gap verwendet wird */
-    flex-shrink: 0; /* Verhindern, dass Buttons schrumpfen */
-}
-
-.cta-button:hover {
-    background: rgba(0, 163, 224, 0.1); /* Leichter blauer Hover-Effekt */
-    color: var(--cg-vibrant-blue);
-    box-shadow: none;
-    transform: translateY(-2px); /* Leichter Hover-Effekt */
-}
-
-.cta-button .arrow-icon {
-    fill: var(--cg-vibrant-blue); /* Pfeil auch blau */
-    width: 20px; /* Pfeil etwas kleiner */
-    height: 20px;
-}
-
-/* Value Props - Heller Hintergrund für Kontrast */
-.value-props {
-    background: var(--cg-grey-bg);
-    color: var(--cg-dark-blue);
-}
-
-.prop-card {
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.prop-card h3 {
-    color: var(--cg-primary-blue);
-}
-
-.prop-card p {
-    color: #333;
-}
-
-/* Workflow Section - Dunkler Hintergrund */
-.workflow-section {
-    background: var(--cg-dark-blue);
-    color: var(--cg-light-text);
-}
-
-.workflow-section h2 {
-    color: var(--cg-light-text);
-}
-
-.step {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.step-number {
-    background: var(--cg-vibrant-blue);
-    color: var(--cg-light-text);
-}
-
-.step h4 {
-    color: var(--cg-vibrant-blue);
-}
-
-.step p {
-    color: rgba(255, 255, 255, 0.85);
-}
-
-/* Metrics Section - Kontrastierender blauer Hintergrund */
-.metrics {
-    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-vibrant-blue) 100%);
-    color: var(--cg-light-text);
-}
-
-.metrics h2 {
-    color: var(--cg-light-text);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.metric-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.metric-value {
-    color: var(--cg-light-text);
-    font-size: 1.8rem;
-}
-
-.metric-label {
-    color: rgba(255, 255, 255, 0.9);
-}
-
-/* Neue Landing Page Styles */
-.hero {
-    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-dark-blue) 100%);
-    position: relative;
-    overflow: hidden;
+    width: 70%; /* Größe auf 70% erhöht */
+    height: 70%; /* Größe auf 70% erhöht */
 }
 
-.hero-content {
-    text-align: center;
-    max-width: 800px;
-    padding: 0 20px;
+/* Korrigiertes Styling für das SVG-Element */
+.ai-badge svg path:last-child {
+    /* Wende die Füllfarbe spezifisch auf den sichtbaren Pfad an */
+    /* und nutze !important, um andere Regeln zu überschreiben */
+    fill: #FFFFFF !important;
 }
 
-.hero-logo {
-    position: relative;
-    margin: 0 auto 30px;
-    width: 120px;
-    height: 120px;
-    animation: float 3s ease-in-out infinite;
+/* Stelle sicher, dass der erste Pfad (der unsichtbare Rahmen) keine Füllung hat */
+.ai-badge svg path:first-child {
+    fill: none !important;
 }
 
-.hexagon {
+/* Stelle sicher, dass das SVG selbst keine Breite/Höhe hat, die die Größe einschränkt */
+.ai-badge svg {
+    display: block;
     width: 100%;
     height: 100%;
-    background: var(--cg-vibrant-blue);
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
-.ai-badge {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--cg-light-text);
-    z-index: 1;
-}
-
+/* Überschrift (H1) im Hero-Bereich */
 h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 3.5rem;
-    margin-bottom: 1.5rem;
-    color: var(--cg-light-text);
-    letter-spacing: -0.5px;
+    /* font-family ist bereits global gesetzt */
+    font-size: 3.5rem; /* Große Schrift */
+    margin-bottom: 1.5rem; /* Abstand nach unten */
+    color: var(--cg-light-text); /* Heller Text */
+    letter-spacing: -0.5px; /* Reduzierter Zeichenabstand */
 }
 
+/* Untertitel im Hero-Bereich */
 .subtitle {
-    font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 2.5rem;
+    font-size: 1.5rem; /* Schriftgröße */
+    color: rgba(255, 255, 255, 0.9); /* Leicht transparenter heller Text */
+    margin-bottom: 2.5rem; /* Abstand nach unten */
 }
 
+/* SVG Pfeil-Icon in den Buttons */
 .arrow-icon {
-    width: 24px;
-    height: 24px;
-    fill: currentColor;
-    transition: transform 0.3s ease;
+    width: 24px; height: 24px; /* Größe */
+    fill: currentColor; /* Nimmt die Textfarbe des Buttons an */
+    transition: transform 0.3s ease; /* Weicher Übergang für Hover-Effekt */
 }
 
+/* Bewegt den Pfeil im Button beim Hover leicht nach rechts */
 .cta-button:hover .arrow-icon {
     transform: translateX(4px);
 }
 
+/* === Value Propositions Section (Landing Page) === */
+/* Container für die "Value Propositions" (Nutzenversprechen) */
 .value-props {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    padding: 80px 20px;
-    background: var(--cg-grey-bg);
+    display: grid; /* Verwendet CSS Grid für das Layout */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive Spalten */
+    gap: 30px; /* Abstand zwischen den Karten */
+    padding: 80px 20px; /* Innenabstand */
+    background: var(--cg-grey-bg); /* Heller grauer Hintergrund */
 }
 
+/* Einzelne Nutzenversprechen-Karte */
 .prop-card {
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    text-align: center;
-    transition: transform 0.3s ease;
+    background: white; /* Weißer Hintergrund */
+    padding: 30px; /* Innenabstand */
+    border-radius: 16px; /* Stark abgerundete Ecken */
+    text-align: center; /* Zentrierter Text */
+    transition: transform 0.3s ease; /* Weicher Übergang für Hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Dezenter Schatten */
+    color: var(--cg-dark-blue); /* Dunkler Text */
 }
 
+/* Leichte Anhebung der Karte beim Hover */
 .prop-card:hover {
     transform: translateY(-8px);
 }
 
+/* Emoji/Icon in der Nutzenversprechen-Karte */
 .prop-icon {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
+    font-size: 2.5rem; /* Große Schriftgröße für Emoji */
+    margin-bottom: 20px; /* Abstand nach unten */
 }
 
+/* Überschrift (H3) in der Nutzenversprechen-Karte */
+.prop-card h3 {
+    color: var(--cg-primary-blue); /* Haupt-Blau */
+    margin-bottom: 15px; /* Abstand nach unten */
+}
+
+/* Text (P) in der Nutzenversprechen-Karte */
+.prop-card p {
+    color: #333; /* Dunkelgrau */
+    font-size: 1rem; /* Standardschriftgröße */
+}
+
+/* === Workflow Section (Landing Page) === */
+/* Container für die Workflow-Beschreibung */
 .workflow-section {
-    padding: 100px 20px;
-    background: var(--cg-dark-blue);
-    text-align: center;
+    padding: 100px 20px; /* Innenabstand */
+    background: var(--cg-dark-blue); /* Dunkelblauer Hintergrund */
+    text-align: center; /* Zentrierter Text */
+    color: var(--cg-light-text); /* Heller Text */
 }
 
+/* Überschrift (H2) in der Workflow-Section */
 .workflow-section h2 {
-    color: var(--cg-light-text);
-    margin-bottom: 60px;
+    color: var(--cg-light-text); /* Heller Text */
+    margin-bottom: 60px; /* Großer Abstand nach unten */
 }
 
+/* Container für die einzelnen Workflow-Schritte */
 .workflow-steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
+    display: grid; /* Verwendet CSS Grid */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Responsive Spalten */
+    gap: 40px; /* Abstand zwischen den Schritten */
+    max-width: 1200px; /* Maximale Breite */
+    margin: 0 auto; /* Zentriert horizontal */
 }
 
+/* Einzelner Workflow-Schritt */
 .step {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    border-radius: 16px;
-    position: relative;
+    background: rgba(255, 255, 255, 0.08); /* Leicht transparenter heller Hintergrund */
+    padding: 30px; /* Innenabstand */
+    border-radius: 16px; /* Stark abgerundete Ecken */
+    position: relative; /* Für Positionierung der Schrittnummer */
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Dezenter heller Rand */
 }
 
+/* Nummer des Workflow-Schritts */
 .step-number {
-    width: 50px;
-    height: 50px;
-    background: var(--cg-vibrant-blue);
-    color: var(--cg-light-text);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    margin: -40px auto 20px;
+    width: 50px; height: 50px; /* Größe */
+    background: var(--cg-vibrant-blue); /* Akzent-Blau */
+    color: var(--cg-light-text); /* Heller Text */
+    border-radius: 50%; /* Rund */
+    display: flex; align-items: center; justify-content: center; /* Zentriert Nummer */
+    font-weight: 700; /* Fette Schrift */
+    margin: -40px auto 20px; /* Positioniert Nummer über der Box, zentriert */
 }
 
+/* Definition der Schwebe-Animation für das Logo */
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    0%, 100% { transform: translateY(0); } /* Start/Endposition */
+    50% { transform: translateY(-10px); } /* Höchste Position in der Mitte */
 }
 
+/* Responsive Anpassungen für Landing Page auf kleineren Bildschirmen */
 @media (max-width: 768px) {
+    /* Verkleinert H1 auf kleineren Bildschirmen */
     h1 {
         font-size: 2.5rem;
     }
-    
+    /* Verkleinert Untertitel auf kleineren Bildschirmen */
     .subtitle {
         font-size: 1.2rem;
     }
 }
 
-/* Neue Metrics-Sektion */
+/* === Metrics Section (Landing Page) === */
+/* Container für die "Operational Impact"-Metriken */
 .metrics {
-    padding: 100px 20px;
-    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-vibrant-blue) 100%);
-    text-align: center;
+    padding: 100px 20px; /* Innenabstand */
+    background: linear-gradient(135deg, var(--cg-primary-blue) 0%, var(--cg-vibrant-blue) 100%); /* Blauer Verlauf */
+    text-align: center; /* Zentrierter Text */
+    color: var(--cg-light-text); /* Heller Text */
 }
 
+/* Grid-Layout für die Metrik-Karten */
 .metric-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
+    display: grid; /* Verwendet CSS Grid */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Responsive Spalten */
+    gap: 40px; /* Abstand zwischen Karten */
+    max-width: 1200px; /* Maximale Breite */
+    margin: 0 auto; /* Zentriert horizontal */
 }
 
+/* Einzelne Metrik-Karte */
 .metric-card {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 40px 20px;
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1); /* Leicht transparenter heller Hintergrund */
+    padding: 40px 20px; /* Innenabstand */
+    border-radius: 16px; /* Stark abgerundete Ecken */
+    backdrop-filter: blur(8px); /* Hintergrundunschärfe-Effekt (für moderne Browser) */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Dezenter heller Rand */
 }
 
+/* Styling für den Metrik-Wert (z.B. "Faster") */
 .metric-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--cg-light-text);
-    line-height: 1.2;
-    margin-bottom: 15px;
-    text-transform: uppercase;
+    font-size: 1.5rem; /* Angepasste, einheitliche Größe */
+    font-weight: 700; /* Fett */
+    color: var(--cg-light-text); /* Weißer Text (war vorher Akzent-Blau) */
+    line-height: 1.2; /* Zeilenhöhe */
+    margin-bottom: 15px; /* Abstand nach unten */
+    text-transform: uppercase; /* Großbuchstaben */
 }
 
+/* Styling für das Metrik-Label (z.B. "Response to Disruptions") */
 .metric-label {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-    max-width: 200px;
-    margin: 0 auto;
-    letter-spacing: 0.3px;
-    line-height: 1.5;
+    font-size: 1rem; /* Einheitliche Größe */
+    color: rgba(255, 255, 255, 0.9); /* Leicht transparenter heller Text */
+    max-width: 200px; /* Maximale Breite für Zeilenumbruch */
+    margin: 0 auto; /* Zentriert horizontal */
+    letter-spacing: 0.3px; /* Leichter Zeichenabstand */
+    line-height: 1.5; /* Einheitliche Zeilenhöhe */
 }
 
-/* Anpassungen für Value Props */
-.prop-card h3 {
-    color: var(--cg-primary-blue);
-    margin-bottom: 15px;
-}
-
-.prop-card p {
-    color: #333;
-    font-size: 1rem;
-}
-
-/* Workflow-Step Anpassungen */
+/* === Einheitliche Schriftgrößen für Boxen (Workflow & Metrics) === */
+/* Überschriften (H4) in Workflow-Schritten */
 .step h4 {
-    color: var(--cg-vibrant-blue);
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.2;
-    text-transform: uppercase;
+    color: var(--cg-vibrant-blue); /* Akzent-Blau */
+    margin-bottom: 15px; /* Abstand nach unten */
+    font-size: 1.5rem; /* Einheitliche Größe (wie metric-value) */
+    font-weight: 700; /* Fett */
+    line-height: 1.2; /* Zeilenhöhe */
+    text-transform: uppercase; /* Großbuchstaben */
 }
 
+/* Text (P) in Workflow-Schritten */
 .step p {
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 1rem;
-    line-height: 1.5;
-    letter-spacing: 0.3px;
+    color: rgba(255, 255, 255, 0.85); /* Leicht transparenter heller Text */
+    font-size: 1rem; /* Einheitliche Größe */
+    line-height: 1.5; /* Zeilenhöhe */
+    letter-spacing: 0.3px; /* Zeichenabstand */
 }
 
-/* Korrektur für die Metrics-Überschrift */
+/* === Überschriften-Styling für Sektionen === */
+/* Gemeinsames Styling für H2 in Workflow und Metrics Section */
+.workflow-section h2,
 .metrics h2 {
-    color: var(--cg-light-text);
-    margin-bottom: 60px;
-    font-size: 28px;
-    font-weight: 600;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    color: var(--cg-light-text);   /* Heller Text */
+    margin-bottom: 60px;        /* Einheitlicher Abstand nach unten */
+    font-size: 28px;            /* Einheitliche Größe */
+    font-weight: 600;           /* Mittelfett */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Leichter Textschatten */
+    text-align: center;         /* Zentriert */
 }
 
-/* Bestehenden Style für workflow-section h2 beibehalten */
-.workflow-section h2 {
-    color: var(--cg-light-text);
-    margin-bottom: 60px;
-}
-
-/* Zusätzliche Anpassungen für bessere vertikale Ausrichtung */
+/* === Vertikale Ausrichtung der Boxen === */
+/* Sorgt für einheitliche Mindesthöhe und vertikale Zentrierung des Inhalts */
 .step, .metric-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 160px;
+    display: flex; /* Aktiviert Flexbox */
+    flex-direction: column; /* Vertikale Anordnung des Inhalts */
+    justify-content: center; /* Zentriert Inhalt vertikal */
+    min-height: 160px; /* Mindesthöhe für alle Boxen */
 }
 
-/* Button-Gruppe für Pyramiden-Layout */
+/* === Button-Gruppe (Landing Page Hero) === */
+/* Container für die drei Buttons im Hero-Bereich */
 .button-group {
-    display: flex;          /* Flexbox aktivieren */
-    flex-direction: column; /* Hauptrichtung vertikal */
-    align-items: center;    /* Alle Elemente horizontal zentrieren */
+    display: flex;          /* Flexbox */
+    flex-direction: column; /* Vertikale Hauptachse */
+    align-items: center;    /* Zentriert Kinder horizontal */
     gap: 15px;              /* Vertikaler Abstand zwischen oberem Button und unterer Reihe */
-    margin-top: 2.5rem;
+    margin-top: 2.5rem; /* Oberer Abstand */
 }
 
 /* Container für die untere Reihe der Buttons */
 .button-group-bottom-row {
-    display: flex;          /* Flexbox für die untere Reihe */
-    flex-direction: row;    /* Richtung horizontal (Standard, aber explizit) */
-    justify-content: center;/* Buttons in der Reihe zentrieren */
-    gap: 20px;              /* Horizontaler Abstand zwischen den unteren Buttons */
-    flex-wrap: wrap;        /* Umbruch für kleinere Bildschirme */
-    width: 100%;            /* Nimmt verfügbare Breite */
+    display: flex;          /* Flexbox */
+    flex-direction: row;    /* Horizontale Hauptachse */
+    justify-content: center;/* Zentriert Buttons horizontal */
+    gap: 20px;              /* Horizontaler Abstand zwischen Buttons */
+    flex-wrap: wrap;        /* Erlaubt Umbruch auf kleinen Bildschirmen */
+    width: 100%;            /* Nimmt volle Breite ein */
 }
 
-/* Gemeinsame Stile für Sektionsüberschriften */
-.workflow-section h2,
-.metrics h2 {
-    color: var(--cg-light-text);   /* Einheitliche helle Textfarbe */
-    margin-bottom: 60px;        /* Einheitlicher Abstand nach unten */
-    font-size: 28px;            /* Einheitliche Schriftgröße */
-    font-weight: 600;           /* Einheitliche Schriftdicke */
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Einheitlicher Schatten für Lesbarkeit */
-    text-align: center;         /* Sicherstellen, dass beide zentriert sind */
+/* === Call-to-Action Buttons (Landing Page Hero) === */
+/* Einheitliches Styling für alle drei Buttons */
+.cta-button {
+    background: transparent; /* Kein Hintergrund */
+    border: 2px solid var(--cg-vibrant-blue); /* Rand in Akzent-Blau */
+    color: var(--cg-vibrant-blue); /* Textfarbe in Akzent-Blau */
+    box-shadow: none; /* Kein Schatten */
+    display: inline-flex; /* Erlaubt Zentrierung von Text und Icon */
+    align-items: center; /* Zentriert Text und Icon vertikal */
+    gap: 12px; /* Abstand zwischen Text und Icon */
+    padding: 16px 35px; /* Innenabstand */
+    border-radius: 50px; /* Vollständig abgerundet */
+    font-size: 1.05rem; /* Schriftgröße */
+    font-weight: 600; /* Mittelfett */
+    text-decoration: none; /* Keine Unterstreichung */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Weicher Übergang */
+    margin: 0; /* Kein eigener Margin (Abstand über gap gesteuert) */
+    flex-shrink: 0; /* Verhindert Schrumpfen bei Platzmangel */
+}
+
+/* Hover-Effekt für die Buttons */
+.cta-button:hover {
+    background: rgba(0, 163, 224, 0.1); /* Leicht transparenter blauer Hintergrund */
+    color: var(--cg-vibrant-blue); /* Textfarbe bleibt gleich */
+    box-shadow: none; /* Kein Schatten */
+    transform: translateY(-2px); /* Leichte Anhebung */
+}
+
+/* Pfeil-Icon im Button */
+.cta-button .arrow-icon {
+    fill: var(--cg-vibrant-blue); /* Füllfarbe passend zum Text/Rand */
+    width: 20px; height: 20px; /* Größe */
 } 
