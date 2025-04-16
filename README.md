@@ -98,4 +98,14 @@ This case demonstrates a multi-agent system for inventory and supplier analysis.
 
 ## License
 
-MIT 
+MIT
+
+Addition from Dominik:
+Draft:
+pip install flask
+pip install crewai
+pip install python-dotenv
+pip install duckduckgo-search
+pip install tomli 
+pip install pandas
+row 20-32 in supplier_analysis.py can be commented out
