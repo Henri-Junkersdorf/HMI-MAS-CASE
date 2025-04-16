@@ -36,6 +36,16 @@ This project uses CrewAI to create a multi-agent system that performs supply cha
    pip install -e .
    ```
 
+4. **Configure API keys and sensitive information**
+   
+   Create a `.env` file in the project root with the following information:
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   EMAIL_PASSWORD=your_email_password_here
+   ```
+   
+   **IMPORTANT**: The `.env` file is already included in `.gitignore` to prevent accidentally committing sensitive information. Never add API keys or passwords directly to the `pyproject.toml` or any other files that might be committed to the repository.
+
 ## Running the Application
 
 1. **Start the Flask server**
@@ -63,10 +73,28 @@ The system consists of 5 specialized agents:
 
 The configuration for the CrewAI agents is stored in `pyproject.toml`. You can modify the following:
 
-- API keys for OpenAI
-- Email configuration for sending reports
 - Agent roles and goals
-- LLM provider settings
+- LLM provider settings (model, temperature)
+- Enabled tools
+
+API keys and other sensitive information should be stored in the `.env` file, not in `pyproject.toml`.
+
+## Working with the Case
+
+This case demonstrates a multi-agent system for inventory and supplier analysis. To work with this case:
+
+1. Make sure your OpenAI API key is set up correctly in the `.env` file
+2. Understand the agent workflow and how the different agents interact
+3. Examine `src/supplier_analysis/supplier_analysis.py` to understand the implementation details
+4. The frontend visualization helps you see the workflow in action
+5. You can modify agent roles, goals, and the LLM configuration in `pyproject.toml`
+
+## Security Practices
+
+- Never store API keys or passwords in code files or configuration files that might be committed to version control
+- Always use environment variables or a `.env` file (which is included in `.gitignore`)
+- Regularly rotate API keys and passwords
+- Use the minimum necessary permissions for API keys
 
 ## License
 

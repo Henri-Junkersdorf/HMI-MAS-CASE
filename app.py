@@ -9,6 +9,13 @@ import io
 from flask import Flask, render_template, jsonify, send_from_directory, request
 from src.supplier_analysis.supplier_analysis import run_analysis
 
+# Helper function to clean ANSI escape sequences
+def clean_ansi(text):
+    """Remove ANSI escape sequences from text for better readability"""
+    if not isinstance(text, str):
+        return text
+    return re.sub(r'\x1B\[[0-9;]*[mK]', '', text)
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -44,8 +51,27 @@ def monitor_email_summary(process_status):
                         if 'To:' in first_line:
                             recipient = first_line.replace('To:', '').strip()
                             process_status['logs'].append(f"Email prepared for recipient: {recipient}")
+                            
+                            # Read the entire email content
+                            f.seek(0)
+                            email_content = f.read()
+                            
+                            # Radikalere Link-Entfernung
+                            # Entferne alle Klammern mit Links vollständig
+                            email_content = re.sub(r'\([^)]*https?://[^)]*\)', '', email_content)
+                            # Entferne alle URLs
+                            email_content = re.sub(r'https?://\S+', '', email_content)
+                            # Entferne alle "\n" Zeichenfolgen vollständig
+                            email_content = email_content.replace('\\n', '')
+                            
+                            # Füge nach jedem Punkt einen Absatz ein
+                            email_content = re.sub(r'\.(\s+)(?=[A-Z])', '.\n\n', email_content)
+                            
+                            # Write the modified content back to the file
+                            with open(email_summary_path, 'w') as fw:
+                                fw.write(email_content)
                 except Exception as e:
-                    logger.error(f"Error reading email summary: {str(e)}")
+                    logger.error(f"Error reading or modifying email summary: {str(e)}")
                 
                 # Don't check again if we found a modification
                 break
@@ -62,6 +88,9 @@ class UILogHandler(logging.Handler):
     def emit(self, record):
         try:
             log_message = self.format(record)
+            
+            # Clean ANSI escape sequences from the log message
+            log_message = clean_ansi(log_message)
             
             # Skip common noise logs
             if any(noise in log_message.lower() for noise in [
@@ -125,7 +154,7 @@ class UILogHandler(logging.Handler):
                              "processing" in log_message.lower())
                 
                 if agent_match:
-                    agent_name = agent_match.group(1).strip()
+                    agent_name = clean_ansi(agent_match.group(1).strip())
                     
                     # Default to In Progress if agent is mentioned with a task
                     status = "Completed" if is_completed else "In Progress" if is_working else "In Progress"
@@ -135,16 +164,16 @@ class UILogHandler(logging.Handler):
                         if "Completed" in status_text:
                             status = "Completed"
                     
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: {status}"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: {status}")
                     print(f"UILogHandler detected agent status: {agent_name} - {status}")
                 
                 # Also look for "Assigned to" format
                 assigned_to_match = re.search(r"Assigned to:\s*([^\n]+)", log_message)
                 if assigned_to_match:
-                    agent_name = assigned_to_match.group(1).strip()
+                    agent_name = clean_ansi(assigned_to_match.group(1).strip())
                     # When an agent is assigned to a task, they're automatically "working"
                     status = "Completed" if is_completed else "In Progress"
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: {status}"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: {status}")
                     print(f"UILogHandler detected assigned agent: {agent_name} - {status}")
                 
                 # Looking for generic agent names in the format "Name Name"
@@ -165,7 +194,7 @@ class UILogHandler(logging.Handler):
                         
                         # Only update if the extracted name looks like an agent
                         if any(agent_term in agent_name.lower() for agent_term in ['specialist', 'analyst', 'researcher', 'communication']):
-                            self.process_status['current_agent'] = f"Agent: {agent_name}, Status: {status}"
+                            self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: {status}")
                             print(f"UILogHandler detected agent name in text: {agent_name} - {status}")
                 
                 # Also pass through anything that looks like it might be agent-related
@@ -182,10 +211,47 @@ class UILogHandler(logging.Handler):
                 elif 'capgemini.com' in log_message.lower():
                     # Only add meaningful email logs
                     self.process_status['logs'].append(f"📧 EMAIL: {log_message}")
+
+            # If we found a message that contains an email JSON string, format it for better readability
+            if log_message.startswith("{\"recipient\":"):
+                try:
+                    # Radikalere Link-Entfernung
+                    # Entferne alle Klammern mit Links vollständig
+                    log_message = re.sub(r'\([^)]*https?://[^)]*\)', '', log_message)
+                    # Entferne alle URLs
+                    log_message = re.sub(r'https?://\S+', '', log_message)
+                    # Entferne alle "\n" Zeichenfolgen vollständig
+                    log_message = log_message.replace('\\n', '')
+                    
+                    # Add line breaks after each period in the body where appropriate
+                    # Look for the "body" field and then add line breaks after sentences
+                    if "\"body\":" in log_message:
+                        # Split at the body field
+                        parts = log_message.split("\"body\":", 1)
+                        prefix = parts[0] + "\"body\":"
+                        
+                        # Extract the body content (it's a JSON string within a JSON string)
+                        body_content = parts[1]
+                        # Find where the body content ends
+                        # It should end with a quote followed by a closing brace or comma
+                        match = re.search(r'(.*?[^\\]\")(,|\})', body_content)
+                        if match:
+                            body_text = match.group(1)  # The actual body content string including the closing quote
+                            suffix = match.group(2) + body_content[match.end(2):]  # The remaining JSON after body
+                            
+                            # Replace periods followed by a space and then a character with period + newline + newline
+                            modified_body = re.sub(r'\.(\s+)(?=[A-Z])', '.\\\n\\\n', body_text)
+                            
+                            # Reassemble the JSON
+                            log_message = prefix + modified_body + suffix
+                except Exception as e:
+                    logger.error(f"Error formatting email: {str(e)}")
         except Exception as e:
             print(f"Error in UILogHandler: {str(e)}")
 
-app = Flask(__name__, static_folder='frontend')
+app = Flask(__name__, 
+            static_folder='frontend',
+            template_folder='frontend')
 
 # Global variables to track process status
 process_status = {
@@ -284,6 +350,14 @@ class StdoutCapture:
             'current_status': None
         }
         
+        # Clean all lines from ANSI escape sequences
+        cleaned_lines = []
+        for line in lines:
+            cleaned_line = clean_ansi(line)
+            cleaned_lines.append(cleaned_line)
+        
+        lines = cleaned_lines
+        
         # Store entire tree structure as a single log entry first
         # This is important - it allows the frontend to see the full tree structure
         full_tree = "\n".join(lines)
@@ -308,7 +382,7 @@ class StdoutCapture:
                      "Status: Completed" in full_tree)):
                     
                     # Add explicit status update
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: Completed"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: Completed")
                     self.original_stdout.write(f"TREE EXTRACTION: {agent_name} -> Completed\n")
                     
                 # Look for in-progress status indicators
@@ -317,7 +391,7 @@ class StdoutCapture:
                        "Status: Executing Task..." in full_tree)):
                     
                     # Add explicit status update
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: In Progress"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: In Progress")
                     self.original_stdout.write(f"TREE EXTRACTION: {agent_name} -> In Progress\n")
         
         # Debug the extracted tree line by line
@@ -334,12 +408,12 @@ class StdoutCapture:
             # Look for agent assignments
             assigned_to_match = re.search(r"Assigned to:\s*([^\n]+)", line)
             if assigned_to_match:
-                agent_name = assigned_to_match.group(1).strip()
+                agent_name = clean_ansi(assigned_to_match.group(1).strip())
                 self.current_processing['current_agent'] = agent_name
                 self.original_stdout.write(f"Found agent assignment: {agent_name}\n")
                 
                 # When an agent is assigned, it is automatically "working" unless specified otherwise
-                self.process_status['current_agent'] = f"Agent: {agent_name}, Status: In Progress"
+                self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: In Progress")
                 self.original_stdout.write(f"Setting assigned agent to working: {agent_name}\n")
                 
                 # Check the next few lines for status information
@@ -348,10 +422,10 @@ class StdoutCapture:
                     status_line = lines[status_line_index]
                     if "Status:" in status_line:
                         if "Completed" in status_line or "✅" in status_line or "✓" in status_line:
-                            self.process_status['current_agent'] = f"Agent: {agent_name}, Status: Completed"
+                            self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: Completed")
                             self.original_stdout.write(f"NEARBY STATUS: Setting {agent_name} to Completed\n")
                         elif "In Progress" in status_line or "Executing" in status_line:
-                            self.process_status['current_agent'] = f"Agent: {agent_name}, Status: In Progress"
+                            self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: In Progress")
                             self.original_stdout.write(f"NEARBY STATUS: Setting {agent_name} to In Progress\n")
                         break
                     status_line_index += 1
@@ -360,13 +434,13 @@ class StdoutCapture:
             # Look for agent declarations
             agent_match = re.search(r"Agent:\s*([^\n]+)", line)
             if agent_match and not line.strip().startswith('│'): # Only match main agent line, not indented ones
-                agent_name = agent_match.group(1).strip()
+                agent_name = clean_ansi(agent_match.group(1).strip())
                 self.current_processing['current_agent'] = agent_name
                 self.original_stdout.write(f"Found agent declaration: {agent_name}\n")
                 
                 # Default agent to working when mentioned, unless status is specified
                 if not re.search(r"Status:", line):
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: In Progress"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: In Progress")
                     self.original_stdout.write(f"Setting declared agent to working: {agent_name}\n")
                 continue
             
@@ -381,11 +455,11 @@ class StdoutCapture:
                 # Process different status types
                 if re.search(r"(?:[✓|✅]\s*)?[Cc]ompleted", status_text):
                     # We found a completed agent
-                    self.process_status['current_agent'] = f"Agent: {current_agent}, Status: Completed"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {current_agent}, Status: Completed")
                     self.original_stdout.write(f"COMPLETION MARKER found for agent: {current_agent}\n")
                 elif re.search(r"Executing Task|In Progress|Working|processing|thinking", status_text, re.IGNORECASE):
                     # We found an executing/working/in-progress agent
-                    self.process_status['current_agent'] = f"Agent: {current_agent}, Status: In Progress"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {current_agent}, Status: In Progress")
                     self.original_stdout.write(f"Detected in-progress agent from tree: {current_agent}\n")
                 continue
         
@@ -400,6 +474,9 @@ class StdoutCapture:
         if not text.strip():
             return
             
+        # Remove ANSI escape sequences for better readability
+        text = clean_ansi(text)
+        
         # Create a simplified hash to avoid duplicates
         msg_hash = text.strip()
         if msg_hash not in self.logged_messages:
@@ -470,7 +547,7 @@ class StdoutCapture:
                         self.original_stdout.write(f"Setting agent to In Progress based on keywords: {agent_name}\n")
                     
                     # Update current agent status
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: {status}"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: {status}")
                     self.original_stdout.write(f"Captured agent info: Agent {agent_name} with status {status}\n")
             
             # Check for CrewAI tree format elements
@@ -486,7 +563,7 @@ class StdoutCapture:
                     status = "Completed" if status_completed else "In Progress"
                     
                     # Update current agent status
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: {status}"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: {status}")
                     self.original_stdout.write(f"Captured tree format element: Agent {agent_name} with status {status}\n")
             
             # Check standalone task completion messages
@@ -496,7 +573,7 @@ class StdoutCapture:
                 if agent_match:
                     agent_name = agent_match.group(1).strip()
                     # Update current agent status
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: Completed"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: Completed")
                     self.original_stdout.write(f"Captured task completion: Agent {agent_name} completed\n")
             
             # Check standalone "Thinking..." messages which indicate an agent is working
@@ -506,7 +583,7 @@ class StdoutCapture:
                 if agent_match:
                     agent_name = agent_match.group(1).strip()
                     # Update current agent status to working
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: In Progress"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: In Progress")
                     self.original_stdout.write(f"Captured agent thinking (in progress): {agent_name}\n")
             
             # Check for any generic agent-task assignments or start indicators
@@ -515,13 +592,23 @@ class StdoutCapture:
                 if agent_match:
                     agent_name = agent_match.group(1).strip()
                     # Update current agent status to working
-                    self.process_status['current_agent'] = f"Agent: {agent_name}, Status: In Progress"
+                    self.process_status['current_agent'] = clean_ansi(f"Agent: {agent_name}, Status: In Progress")
                     self.original_stdout.write(f"Captured agent starting work: {agent_name}\n")
 
 @app.route('/')
 def index():
-    """Serve the main frontend page."""
-    return send_from_directory('frontend', 'index.html')
+    return render_template('index.html')
+
+@app.route('/landing')
+def landing():
+    return render_template('landing.html')
+
+@app.route('/limited')
+def limited_index():
+    # We render the same template, the difference will be handled
+    # in the backend logic triggered by the run button, which will
+    # know which CSV to use based on the context or a parameter.
+    return render_template('index.html')
 
 @app.route('/<path:path>')
 def serve_static(path):
@@ -551,20 +638,26 @@ def run_demo():
         # Don't run if already running
         if process_status['status'] == 'running':
             return jsonify({'error': 'Process is already running'}), 400
-        
+
+        # Get scenario from request body (default to 'standard')
+        request_data = request.get_json() or {}
+        scenario = request_data.get('scenario', 'standard') # 'standard' oder 'limited'
+        logger.info(f"Received run request for scenario: {scenario}")
+
         # Reset status
         process_status.update({
             'status': 'running',
             'logs': [],
             'current_agent': None,
-            'result': None
+            'result': None,
+            'scenario': scenario # Store scenario in status
         })
-        
-        # Start the analysis in a separate thread to not block the main thread
-        thread = threading.Thread(target=run_demo_thread)
+
+        # Start the analysis in a separate thread, passing the scenario
+        thread = threading.Thread(target=run_demo_thread, args=(scenario,)) # Pass scenario to thread
         thread.daemon = True
         thread.start()
-        
+
         return jsonify({'status': 'started'})
     except Exception as e:
         logger.error(f"Error starting demo: {str(e)}")
@@ -573,7 +666,7 @@ def run_demo():
             'error': str(e)
         }), 500
 
-def run_demo_thread():
+def run_demo_thread(scenario='standard'): # Add scenario parameter with default
     """Run the analysis demo in a separate thread."""
     global process_status
     try:
@@ -581,34 +674,34 @@ def run_demo_thread():
         log_thread = threading.Thread(target=capture_logs, args=(process_status,))
         log_thread.daemon = True
         log_thread.start()
-        
+
         # Start stdout capture
         stdout_capture = StdoutCapture(process_status)
         stdout_capture.start()
-        
+
         # Start email monitoring
         email_monitor_thread = threading.Thread(target=monitor_email_summary, args=(process_status,))
         email_monitor_thread.daemon = True
         email_monitor_thread.start()
-        
-        # Run the actual analysis
-        print("Starting analysis with CrewAI agents...")
-        result = run_analysis()
-        
+
+        # Run the actual analysis, passing the scenario
+        print(f"Starting analysis for scenario '{scenario}' with CrewAI agents...")
+        result = run_analysis(scenario=scenario) # Pass scenario to run_analysis
+
         # Stop stdout capture
         stdout_capture.stop()
-        
+
         # Update process status
         process_status.update({
             'status': 'completed',
-            'result': str(result) if result else "Analysis completed successfully with email sent."
+            'result': str(result) if result else f"Analysis ({scenario} scenario) completed successfully with email sent."
         })
-        
+
         # Ensure log contains email confirmation
-        logger.info("Email has been sent with analysis results")
+        logger.info(f"Email has been sent with analysis results ({scenario} scenario)")
     except Exception as e:
         # Update process status on error
-        error_msg = f"Error: {str(e)}"
+        error_msg = f"Error in {scenario} scenario: {str(e)}"
         logger.error(error_msg)
         process_status.update({
             'status': 'error',

@@ -10,6 +10,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import re
+import sys
+import io
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,7 +24,9 @@ def get_api_key():
         
         with open(config_path, "rb") as f:
             config = tomli.load(f)
-            return config["tool"]["crewai"]["llm"]["api_key"]
+            # TOML verwendet eine verschachtelte Struktur
+            if "tool" in config and "crewai" in config["tool"] and "llm" in config["tool"]["crewai"]:
+                return config["tool"]["crewai"]["llm"]["api_key"]
     except Exception as e:
         logger.error(f"Error loading API key from config: {str(e)}")
         return None
@@ -173,6 +177,11 @@ class EmailTool(BaseTool):
             
             # Get content and format email body
             content = input_dict.get('body', '')
+            
+            # Radikale Nachbearbeitung - alle \n Zeichenfolgen komplett entfernen
+            content = content.replace('\\n', '')
+            content = content.replace('\\\\n', '')
+            
             body = f"""Dear {formatted_name},
 
 I hope this email finds you well. I'm writing to bring to your immediate attention a critical supply chain situation regarding the VQC4101-51 SMC 5/2-Wegeventil valve that requires urgent action.
@@ -251,6 +260,17 @@ Multi-Agent System
             # Always save a copy first
             with open(output_path, 'w') as f:
                 f.write(email_content)
+                
+            # Radikale Nachbearbeitung - alle \n Zeichenfolgen komplett entfernen
+            with open(output_path, 'r') as f:
+                cleaned_content = f.read()
+                # Hier nochmal alle Backslash-n Zeichenfolgen entfernen (inkl. doppelter)
+                cleaned_content = cleaned_content.replace('\\n', '')
+                cleaned_content = cleaned_content.replace('\\\\n', '')
+                
+            # Und nochmal speichern
+            with open(output_path, 'w') as f:
+                f.write(cleaned_content)
             
             # Try to send with retries
             max_retries = 3
@@ -285,17 +305,61 @@ Multi-Agent System
             logger.error(f"Error creating email: {str(e)}")
             return f"Failed to create email: {str(e)}"
 
-def run_analysis():
+# Monkey-patch CrewAI's output to reduce indentation
+def patch_crewai_display():
     try:
+        import crewai.agents.cache
+        import re
+        original_print = print
+        
+        def custom_print(*args, **kwargs):
+            if args and isinstance(args[0], str):
+                text = args[0]
+                
+                # Reduziere die Anzahl der Einrückungszeichen
+                if "│" in text and text.count("│") > 3:
+                    text = re.sub(r'(│\s+){4,}', '│ │ ', text)
+                    text = re.sub(r'(│\s+){3}', '│ │ ', text)
+                
+                # Entferne ANSI-Escape-Sequenzen für bessere Lesbarkeit
+                # Dies entfernt Farbcodes und Formatierungen
+                text = re.sub(r'\x1B\[[0-9;]*[mK]', '', text)
+                
+                args = (text,) + args[1:]
+                
+            original_print(*args, **kwargs)
+            
+        # Ersetze die print-Funktion in relevanten Modulen
+        sys.modules['crewai.agents.cache'].print = custom_print
+        
+    except Exception as e:
+        logger.warning(f"Konnte CrewAI-Anzeige nicht anpassen: {str(e)}")
+
+def run_analysis(scenario='standard'):
+    try:
+        # Patch CrewAI display to reduce indentation
+        patch_crewai_display()
+        
         api_key = get_api_key()
         if not api_key:
             raise ValueError("Failed to load API key from config")
         os.environ["OPENAI_API_KEY"] = api_key
         logger.info("API key configured successfully")
 
-        # Load supplier data
-        suppliers_df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'suppliers.csv'))
-        logger.info(f"Loaded {len(suppliers_df)} suppliers from CSV")
+        # Determine which CSV file to load based on the scenario
+        if scenario == 'limited':
+            supplier_csv_file = 'suppliers_limited.csv'
+            logger.info("Running 'limited' scenario, loading suppliers_limited.csv")
+        else:
+            supplier_csv_file = 'suppliers.csv'
+            logger.info("Running 'standard' scenario, loading suppliers.csv")
+
+        # Load supplier data using the determined filename
+        supplier_csv_path = os.path.join(os.path.dirname(__file__), supplier_csv_file)
+        if not os.path.exists(supplier_csv_path):
+             raise FileNotFoundError(f"Supplier CSV file not found: {supplier_csv_path}")
+        suppliers_df = pd.read_csv(supplier_csv_path)
+        logger.info(f"Loaded {len(suppliers_df)} suppliers from {supplier_csv_file}")
         
         # Load valve demand data
         try:
@@ -572,10 +636,10 @@ Current Inventory State (as of {current_date}):
                 - ONLY include dynamically fetched current pricing information, not hardcoded estimates
                 
                 CRITICAL INSTRUCTION:
-                You MUST send this executive summary via email to henri.junkersdorf@capgemini.com using the send_email tool with the following format:
+                You MUST send this executive summary via email to agenticai.capgemini@gmail.com using the send_email tool with the following format:
                 
                 {
-                  "recipient": "henri.junkersdorf@capgemini.com",
+                  "recipient": "agenticai.capgemini@gmail.com",
                   "subject": "Executive Summary: Supply Chain Risk Assessment - VQC4101-51 SMC Valve",
                   "body": "YOUR FORMATTED EXECUTIVE SUMMARY HERE"
                 }
@@ -643,4 +707,4 @@ def calculate_seasonal_factors(df):
     return "\n".join(seasonal_info)
 
 if __name__ == "__main__":
-    run_analysis() 
+    run_analysis()
