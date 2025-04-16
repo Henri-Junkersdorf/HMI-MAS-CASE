@@ -608,7 +608,13 @@ def limited_index():
     # We render the same template, the difference will be handled
     # in the backend logic triggered by the run button, which will
     # know which CSV to use based on the context or a parameter.
-    return render_template('index.html')
+    return render_template('landing.html', scenario='limited')
+
+# Neue Route für die Demand Initiation Seite
+@app.route('/initiate_demand')
+def initiate_demand_page():
+    # Rendert die neue Seite für die Demand Initiation
+    return render_template('demand_initiation.html')
 
 @app.route('/<path:path>')
 def serve_static(path):

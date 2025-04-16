@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demand Initiation</title>
+    <!-- Link zur CSS-Datei -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- === Hero Section (kopiert von landing.html für das Styling) === -->
+    <section class="hero">
+        <!-- Container für den Inhalt im Hero-Bereich -->
+        <div class="hero-content">
+            <h1>Demand Initiation</h1>
+            <!-- Formular für die Eingabe -->
+            <form id="demand-form" action="/api/submit_demand" method="post" novalidate>
+                <div class="form-group">
+                    <label for="part-id">Part ID:</label>
+                    <input type="text" id="part-id" name="part_id" required>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="text" id="quantity" name="quantity" inputmode="numeric" pattern="[0-9]*" required>
+                </div>
+                <div class="form-group">
+                    <label for="due-date">Due Date:</label>
+                    <input type="date" id="due-date" name="due_date" required>
+                </div>
+                <button type="submit" class="cta-button">Submit Demand</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        // DOM-Elemente abrufen
+        const form = document.getElementById('demand-form');
+        const partIdInput = document.getElementById('part-id');
+        const quantityInput = document.getElementById('quantity');
+        const dueDateInput = document.getElementById('due-date');
+
+        // Setze das Mindestdatum für das Due Date auf heute
+        function setMinDate() {
+            const today = new Date();
+            // Formatieren als YYYY-MM-DD (erforderlich für das min-Attribut)
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Monate sind 0-basiert
+            const day = String(today.getDate()).padStart(2, '0');
+            const todayString = `${year}-${month}-${day}`;
+            dueDateInput.min = todayString;
+        }
+
+        // Rufe die Funktion auf, um das Mindestdatum zu setzen
+        setMinDate();
+
+        // Event Listener für das Absenden des Formulars
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+
+            // Hilfsfunktion, um Fehler anzuzeigen (roter Rand + Wackeln)
+            function showError(inputElement) {
+                inputElement.classList.add('invalid-input');
+                inputElement.classList.add('shake-error');
+                // Entferne die Wackel-Klasse nach der Animation, damit sie erneut ausgelöst werden kann
+                setTimeout(() => {
+                    inputElement.classList.remove('shake-error');
+                }, 500); // Dauer der Animation in Millisekunden
+                isValid = false;
+            }
+
+            // Reset validation classes
+            partIdInput.classList.remove('invalid-input');
+            quantityInput.classList.remove('invalid-input');
+            dueDateInput.classList.remove('invalid-input');
+            // Shake-Klasse wird über setTimeout entfernt, hier nicht nötig
+
+            // Part ID Validierung (darf nicht leer sein)
+            if (partIdInput.value.trim() === '') {
+                showError(partIdInput);
+            }
+
+            // Quantity Validierung (muss eine positive Zahl sein)
+            const quantityValue = quantityInput.value.trim();
+            const parsedQuantity = parseInt(quantityValue);
+            // Prüfe, ob leer, keine Zahl oder kleiner/gleich 0
+            if (quantityValue === '' || isNaN(parsedQuantity) || parsedQuantity <= 0) {
+                showError(quantityInput);
+            }
+
+            // Due Date Validierung (darf nicht leer sein und nicht in der Vergangenheit)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Setze Zeit auf Mitternacht für korrekten Vergleich
+            const selectedDate = new Date(dueDateInput.value + 'T00:00:00'); // Füge Zeit hinzu, um Zeitzonenprobleme zu vermeiden
+
+            if (dueDateInput.value.trim() === '' || selectedDate < today) {
+                showError(dueDateInput);
+            }
+
+            // Wenn ein Feld ungültig ist, verhindere das Absenden
+            if (!isValid) {
+                event.preventDefault(); // Verhindert das tatsächliche Senden des Formulars
+                console.log("Form validation failed. Please fill all required fields.");
+            } else {
+                console.log("Form validation successful. Submitting...");
+                // Standard-Submit wird zugelassen, wenn alles gültig ist
+            }
+        });
+    </script>
+
+</body>
+</html> 
